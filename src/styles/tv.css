@@ -1,0 +1,23 @@
+/* Bigger touch/focus targets */
+button, input, iframe {
+  min-height: 56px;
+  font-size: 18px;
+}
+
+/* Focus ring for TV remote */
+:focus {
+  outline: 4px solid #e50914;
+  outline-offset: 4px;
+}
+
+/* Disable hover scaling (TV has no hover) */
+@media (hover: none) {
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+}
+
+/* Smooth scroll for rows */
+.scrollbar-hide {
+  scroll-behavior: smooth;
+}
