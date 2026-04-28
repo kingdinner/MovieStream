@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from '
 import {
   Play, Info, ChevronLeft, ChevronRight, X, Search,
   Home as HomeIcon, Film, Tv, Star, Plus, Check,
-  Volume2, VolumeX, Bell, BookMarked, ChevronDown, ArrowLeft
+  Bell, BookMarked, ArrowLeft
 } from 'lucide-react';
 
 /* ─────────────── CONSTANTS ─────────────── */
@@ -64,10 +64,11 @@ const injectStyles = () => {
     .hbtn.nf:hover,.hbtn.nf:focus { background:rgba(109,109,110,.5); outline:none; }
 
     /* ── Nav ── */
-    .ni { display:flex; align-items:center; gap:6px; padding:8px 4px; font-size:14px; font-weight:500; color:rgba(255,255,255,.7); background:none; border:none; cursor:pointer; transition:color .18s; font-family:'DM Sans',sans-serif; position:relative; white-space:nowrap; }
+    .ni { display:inline-flex; align-items:center; justify-content:center; gap:6px; height:36px; padding:0 10px; font-size:14px; font-weight:500; color:rgba(255,255,255,.7); background:none; border:none; cursor:pointer; transition:color .18s; font-family:'DM Sans',sans-serif; position:relative; white-space:nowrap; line-height:1; }
     .ni.act { color:#fff; }
-    .ni.act::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:2px; background:#e50914; border-radius:1px; }
+    .ni.act::after { content:''; position:absolute; bottom:-6px; left:10px; right:10px; height:2px; background:#e50914; border-radius:1px; }
     .ni:hover,.ni:focus { color:#fff; outline:none; }
+    .ni svg { display:block; }
 
     /* ── Modal ── */
     .moverlay { position:fixed; inset:0; background:rgba(0,0,0,.82); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; animation:fi .22s ease; }
@@ -271,7 +272,7 @@ const ViewAllPage = memo(({ title, landscape, myList, onSelect, onPlay, onToggle
     setLoading(false);
   }, [cfg]);
 
-  useEffect(() => { load(page); }, [page]);
+  useEffect(() => { load(page); }, [page, load]);
 
   const pages = useMemo(() => {
     const arr = [];
@@ -282,9 +283,9 @@ const ViewAllPage = memo(({ title, landscape, myList, onSelect, onPlay, onToggle
   }, [page, total]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 300, overflowY: 'auto', padding: '0 4% 60px' }}>
+    <div style={{ position: 'fixed', top: 66, left: 0, right: 0, bottom: 0, background: '#000', zIndex: 80, overflowY: 'auto', padding: '0 4% 60px' }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 0 28px', position: 'sticky', top: 0, background: 'rgba(0,0,0,.95)', zIndex: 10, backdropFilter: 'blur(8px)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '20px 0 22px', position: 'sticky', top: 0, background: 'rgba(0,0,0,.95)', zIndex: 10, backdropFilter: 'blur(8px)' }}>
         <button onClick={onClose} style={{ background: 'rgba(255,255,255,.1)', border: 'none', borderRadius: '50%', width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', flexShrink: 0 }}
           aria-label="Back">
           <ArrowLeft size={20} />
@@ -325,8 +326,8 @@ const ViewAllPage = memo(({ title, landscape, myList, onSelect, onPlay, onToggle
 
 /* ─────────────── MY LIST PAGE ─────────────── */
 const MyListPage = memo(({ myList, myListItems, onSelect, onPlay, onToggleList, onClose }) => (
-  <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 300, overflowY: 'auto', padding: '0 4% 60px' }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '24px 0 28px', position: 'sticky', top: 0, background: 'rgba(0,0,0,.95)', zIndex: 10 }}>
+  <div style={{ position: 'fixed', top: 66, left: 0, right: 0, bottom: 0, background: '#000', zIndex: 80, overflowY: 'auto', padding: '0 4% 60px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '20px 0 22px', position: 'sticky', top: 0, background: 'rgba(0,0,0,.95)', zIndex: 10 }}>
       <button onClick={onClose} style={{ background: 'rgba(255,255,255,.1)', border: 'none', borderRadius: '50%', width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}>
         <ArrowLeft size={20} />
       </button>
@@ -609,18 +610,19 @@ export default function App() {
       <header style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 90,
         padding: '0 4%',
-        background: scrolled ? 'rgba(0,0,0,.97)' : 'linear-gradient(to bottom, rgba(0,0,0,.88) 0%, transparent 100%)',
+        background: (scrolled || viewAllRow || showMyList) ? 'rgba(0,0,0,.97)' : 'linear-gradient(to bottom, rgba(0,0,0,.88) 0%, transparent 100%)',
+        borderBottom: (viewAllRow || showMyList) ? '1px solid rgba(255,255,255,.06)' : 'none',
         transition: 'background .35s ease',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         height: 66,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32, height: '100%' }}>
           {/* Logo */}
-          <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 32, letterSpacing: 2, color: '#e50914', lineHeight: 1, userSelect: 'none', cursor: 'default' }}>
-            STREAMR
+          <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 34, letterSpacing: 3, color: '#e50914', lineHeight: 1, userSelect: 'none', cursor: 'default', display: 'flex', alignItems: 'center', height: '100%' }}>
+            KV
           </div>
           {/* Nav */}
-          <nav style={{ display: 'flex', gap: 6 }}>
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 4, height: '100%' }}>
             {[
               { id: 'home',   Icon: HomeIcon, label: 'Home' },
               { id: 'movies', Icon: Film,     label: 'Movies' },
@@ -634,7 +636,7 @@ export default function App() {
         </div>
 
         {/* Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, height: '100%' }}>
           {/* Search */}
           {searchOpen ? (
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -649,38 +651,55 @@ export default function App() {
               />
               {searchQuery && (
                 <button onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchOpen(false); }}
-                  style={{ position: 'absolute', right: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', display: 'flex' }}>
+                  style={{ position: 'absolute', right: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', display: 'flex', alignItems: 'center' }}>
                   <X size={14} />
                 </button>
               )}
             </div>
           ) : (
-            <button onClick={() => setSearchOpen(true)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', padding: 6 }} aria-label="Search">
+            <button onClick={() => setSearchOpen(true)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, padding: 0 }} aria-label="Search">
               <Search size={20} />
             </button>
           )}
 
           {/* My List */}
-          <button onClick={() => setShowMyList(true)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: '4px 6px' }} aria-label="My List">
+          <button onClick={() => setShowMyList(true)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, padding: 0, position: 'relative' }} aria-label="My List">
             <BookMarked size={20} />
             {myList.size > 0 && (
-              <span style={{ fontSize: 10, background: '#e50914', color: '#fff', borderRadius: 8, padding: '0 5px', lineHeight: 1.6, fontWeight: 700 }}>{myList.size}</span>
+              <span style={{ position: 'absolute', top: -2, right: -4, fontSize: 10, background: '#e50914', color: '#fff', borderRadius: 8, padding: '0 5px', lineHeight: 1.6, fontWeight: 700, minWidth: 16, textAlign: 'center' }}>{myList.size}</span>
             )}
           </button>
 
           {/* Bell */}
-          <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', padding: 6 }} aria-label="Notifications">
+          <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, padding: 0 }} aria-label="Notifications">
             <Bell size={20} />
           </button>
 
-          {/* Avatar */}
-          <div style={{
-            width: 34, height: 34, borderRadius: 5, flexShrink: 0,
-            background: 'linear-gradient(135deg, #e50914, #8b0000)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Bebas Neue',sans-serif", fontSize: 19, color: '#fff',
-            cursor: 'pointer', userSelect: 'none',
-          }}>K</div>
+          {/* Avatar — click to return home */}
+          <button
+            onClick={() => {
+              setActiveTab('home');
+              setViewAllRow(null);
+              setShowMyList(false);
+              setSearchQuery('');
+              setSearchResults([]);
+              setSearchOpen(false);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            aria-label="Home"
+            title="Home"
+            style={{
+              width: 34, height: 34, borderRadius: 5, flexShrink: 0,
+              background: 'linear-gradient(135deg, #e50914, #8b0000)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'Bebas Neue',sans-serif", fontSize: 19, color: '#fff',
+              cursor: 'pointer', userSelect: 'none', lineHeight: 1,
+              border: 'none', padding: 0,
+              transition: 'transform .15s ease, box-shadow .15s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255,255,255,.25)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+          >K</button>
         </div>
       </header>
 
@@ -891,7 +910,7 @@ export default function App() {
 
         {/* Footer */}
         <footer style={{ padding: '44px 4% 28px', borderTop: '1px solid rgba(255,255,255,.07)', marginTop: 40 }}>
-          <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 22, color: '#e50914', letterSpacing: 2, marginBottom: 14 }}>STREAMR</div>
+          <div style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 22, color: '#e50914', letterSpacing: 3, marginBottom: 14 }}>KV</div>
           <p style={{ color: '#444', fontSize: 13, maxWidth: 480, lineHeight: 1.65 }}>
             Powered by TMDB · Streaming via VidSrc · For personal use only
           </p>
