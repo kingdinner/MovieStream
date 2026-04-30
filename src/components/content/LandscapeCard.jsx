@@ -2,10 +2,9 @@ import { memo } from 'react';
 import { Play, Plus, Check, Star } from 'lucide-react';
 import { img } from '../../constants/api';
 
-const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
-  const poster = img('w342', item.poster_path);
-  const title  = item.title || item.name || '';
-  const year   = (item.release_date || item.first_air_date || '').slice(0, 4);
+const LandscapeCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
+  const backdrop  = img('w500', item.backdrop_path) || img('w342', item.poster_path);
+  const title     = item.title || item.name || '';
 
   const handlePlay    = (e) => { e.stopPropagation(); onPlay(item); };
   const handleList    = (e) => { e.stopPropagation(); onToggleList(item); };
@@ -15,17 +14,16 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
 
   return (
     <div
-      style={{ width: 155, flexShrink: 0, cursor: 'pointer', outline: 'none' }}
+      style={{ width: 268, flexShrink: 0, cursor: 'pointer', outline: 'none' }}
       onClick={() => onSelect(item)}
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
       aria-label={title}
     >
-      {/* Image — clips the scale/hover effect */}
-      <div className="sc" style={{ width: 155, height: 232, display: 'block' }}>
-        {poster
-          ? <img src={poster} alt={title} loading="lazy" decoding="async" />
+      <div className="sc" style={{ width: 268, height: 151, display: 'block' }}>
+        {backdrop
+          ? <img src={backdrop} alt={title} loading="lazy" decoding="async" />
           : <div className="shim" style={{ width: '100%', height: '100%' }} />
         }
         <div className="ov">
@@ -36,8 +34,7 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
             <button
               className={`cbtn ${inList ? 'added' : ''}`}
               onClick={handleList}
-              aria-label={inList ? 'Remove from My List' : 'Add to My List'}
-              title={inList ? 'Remove' : 'Add to list'}
+              title={inList ? 'Remove' : 'Add'}
             >
               {inList ? <Check size={13} /> : <Plus size={13} />}
             </button>
@@ -45,7 +42,6 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
         </div>
       </div>
 
-      {/* Always-visible title + meta */}
       <div style={{ padding: '8px 2px 4px' }}>
         <p style={{
           color: '#e5e5e5', fontSize: 13, fontWeight: 600, lineHeight: 1.35,
@@ -56,17 +52,11 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <Star size={10} fill="#f5c518" color="#f5c518" />
           <span style={{ color: '#999', fontSize: 11 }}>{item.vote_average?.toFixed(1)}</span>
-          {year && (
-            <>
-              <span style={{ color: '#444', fontSize: 11 }}>·</span>
-              <span style={{ color: '#777', fontSize: 11 }}>{year}</span>
-            </>
-          )}
         </div>
       </div>
     </div>
   );
 });
 
-ContentCard.displayName = 'ContentCard';
-export default ContentCard;
+LandscapeCard.displayName = 'LandscapeCard';
+export default LandscapeCard;

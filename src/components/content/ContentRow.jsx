@@ -1,32 +1,51 @@
+import { memo, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRef } from 'react';
-import ContentCard from './ContentCard';
+import ContentCard   from './ContentCard';
+import LandscapeCard from './LandscapeCard';
 
-export default function ContentRow({ title, items, onSelect }) {
+const ContentRow = memo(({ title, items, landscape, onSelect, onPlay, onToggleList, myList }) => {
   const ref = useRef(null);
 
-  const scroll = dir => {
-    ref.current.scrollBy({ left: dir === 'left' ? -800 : 800, behavior: 'smooth' });
-  };
+  const scroll = useCallback((dir) => {
+    if (!ref.current) return;
+    ref.current.scrollBy({ left: dir === 'l' ? -860 : 860, behavior: 'smooth' });
+  }, []);
+
+  if (!items || items.length === 0) return null;
 
   return (
-    <section className="mb-8">
-      <h3 className="text-white text-2xl font-bold px-12 mb-4">{title}</h3>
-      <div className="relative group">
-        <button onClick={() => scroll('left')} className="row-btn left-0">
-          <ChevronLeft />
-        </button>
+    <section style={{ marginBottom: 36 }}>
+      {/* Row title */}
+      <h3 style={{
+        color: '#e5e5e5', fontFamily: "'DM Sans',sans-serif",
+        fontSize: 'clamp(16px,1.8vw,22px)', fontWeight: 700,
+        padding: '0 4% 10px',
+      }}>
+        {title}
+      </h3>
 
-        <div ref={ref} className="flex gap-4 overflow-x-auto px-12 scrollbar-hide">
-          {items.map(i => (
-            <ContentCard key={i.id} item={i} onSelect={onSelect} />
+      {/* Scrollable card strip */}
+      <div className="rw" style={{ position: 'relative' }}>
+        <button className="rarr" onClick={() => scroll('l')} aria-label="Scroll left">
+          <ChevronLeft size={44} />
+        </button>
+        <div
+          ref={ref}
+          style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 4% 12px' }}
+        >
+          {items.map(item => (
+            landscape
+              ? <LandscapeCard key={item.id} item={item} onSelect={onSelect} onPlay={onPlay} onToggleList={onToggleList} inList={myList.has(item.id)} />
+              : <ContentCard   key={item.id} item={item} onSelect={onSelect} onPlay={onPlay} onToggleList={onToggleList} inList={myList.has(item.id)} />
           ))}
         </div>
-
-        <button onClick={() => scroll('right')} className="row-btn right-0">
-          <ChevronRight />
+        <button className="rarr r" onClick={() => scroll('r')} aria-label="Scroll right">
+          <ChevronRight size={44} />
         </button>
       </div>
     </section>
   );
-}
+});
+
+ContentRow.displayName = 'ContentRow';
+export default ContentRow;
