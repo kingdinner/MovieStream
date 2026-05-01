@@ -3,16 +3,13 @@ import { Play, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { img } from '../../constants/api';
 
 const DOT_STYLE = (active) => ({
+  display:      'inline-block',   /* span — no browser min-height */
   width:        active ? 22 : 8,
   height:       8,
   borderRadius: active ? 4 : '50%',
   background:   active ? '#e50914' : 'rgba(255,255,255,.45)',
-  border:       'none',
-  padding:      0,
-  margin:       0,
   cursor:       'pointer',
   flexShrink:   0,
-  display:      'block',
   transition:   'all .35s ease',
 });
 
@@ -101,11 +98,14 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
       {items.length > 1 && (
         <div style={{ position: 'absolute', bottom: '10%', left: '4%', display: 'flex', alignItems: 'center', gap: 8, zIndex: 8 }}>
           {items.map((_, i) => (
-            <button
+            <span
               key={i}
+              role="button"
+              tabIndex={0}
+              aria-label={`Slide ${i + 1}`}
               style={DOT_STYLE(i === activeIdx)}
               onClick={() => setActiveIdx(i)}
-              aria-label={`Slide ${i + 1}`}
+              onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setActiveIdx(i)}
             />
           ))}
         </div>

@@ -41,7 +41,8 @@ export default function DetailsModal({
       .then(r => r.json())
       .then(d => setRecommendations((d.results || []).filter(r => r.poster_path).slice(0, 12)))
       .catch(() => setRecommendations([]));
-  }, [selected?.id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected?.id, selected?.media_type]);
 
   /* Reset episode page when season changes */
   useEffect(() => {

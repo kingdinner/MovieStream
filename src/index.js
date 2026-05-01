@@ -4,11 +4,14 @@ import './index.css';
 import './styles/tv.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { WatchedProvider } from './context/WatchedContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <WatchedProvider>
+      <App />
+    </WatchedProvider>
   </React.StrictMode>
 );
 

@@ -1,11 +1,15 @@
 import { memo } from 'react';
-import { Play, Plus, Check, Star } from 'lucide-react';
+import { Play, Plus, Check, Star, Eye } from 'lucide-react';
 import { img } from '../../constants/api';
+import { useWatched } from '../../context/WatchedContext';
 
 const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
-  const poster = img('w342', item.poster_path);
-  const title  = item.title || item.name || '';
-  const year   = (item.release_date || item.first_air_date || '').slice(0, 4);
+  const { watchedIds } = useWatched();
+  const isWatched = watchedIds.has(String(item.id));
+
+  const poster  = img('w342', item.poster_path);
+  const title   = item.title || item.name || '';
+  const year    = (item.release_date || item.first_air_date || '').slice(0, 4);
 
   const handlePlay    = (e) => { e.stopPropagation(); onPlay(item); };
   const handleList    = (e) => { e.stopPropagation(); onToggleList(item); };
@@ -22,12 +26,26 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
       role="button"
       aria-label={title}
     >
-      {/* Image — clips the scale/hover effect */}
       <div className="sc" style={{ width: 155, height: 232, display: 'block' }}>
         {poster
           ? <img src={poster} alt={title} loading="lazy" decoding="async" />
           : <div className="shim" style={{ width: '100%', height: '100%' }} />
         }
+
+        {/* Watched badge */}
+        {isWatched && (
+          <div style={{
+            position: 'absolute', top: 6, left: 6, zIndex: 5,
+            background: 'rgba(70,211,105,.92)', borderRadius: 4,
+            padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 3,
+          }}>
+            <Eye size={10} color="#fff" />
+            <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, fontFamily: "'DM Sans',sans-serif" }}>
+              WATCHED
+            </span>
+          </div>
+        )}
+
         <div className="ov">
           <div className="ca">
             <button className="cbtn pl" onClick={handlePlay} aria-label={`Play ${title}`} title="Play">
@@ -48,7 +66,8 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
       {/* Always-visible title + meta */}
       <div style={{ padding: '8px 2px 4px' }}>
         <p style={{
-          color: '#e5e5e5', fontSize: 13, fontWeight: 600, lineHeight: 1.35,
+          color: isWatched ? '#888' : '#e5e5e5',
+          fontSize: 13, fontWeight: 600, lineHeight: 1.35,
           marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {title}

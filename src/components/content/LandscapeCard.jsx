@@ -1,10 +1,14 @@
 import { memo } from 'react';
-import { Play, Plus, Check, Star } from 'lucide-react';
+import { Play, Plus, Check, Star, Eye } from 'lucide-react';
 import { img } from '../../constants/api';
+import { useWatched } from '../../context/WatchedContext';
 
 const LandscapeCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
-  const backdrop  = img('w500', item.backdrop_path) || img('w342', item.poster_path);
-  const title     = item.title || item.name || '';
+  const { watchedIds } = useWatched();
+  const isWatched = watchedIds.has(String(item.id));
+
+  const backdrop = img('w500', item.backdrop_path) || img('w342', item.poster_path);
+  const title    = item.title || item.name || '';
 
   const handlePlay    = (e) => { e.stopPropagation(); onPlay(item); };
   const handleList    = (e) => { e.stopPropagation(); onToggleList(item); };
@@ -26,6 +30,21 @@ const LandscapeCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) =>
           ? <img src={backdrop} alt={title} loading="lazy" decoding="async" />
           : <div className="shim" style={{ width: '100%', height: '100%' }} />
         }
+
+        {/* Watched badge */}
+        {isWatched && (
+          <div style={{
+            position: 'absolute', top: 6, left: 6, zIndex: 5,
+            background: 'rgba(70,211,105,.92)', borderRadius: 4,
+            padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 3,
+          }}>
+            <Eye size={10} color="#fff" />
+            <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, fontFamily: "'DM Sans',sans-serif" }}>
+              WATCHED
+            </span>
+          </div>
+        )}
+
         <div className="ov">
           <div className="ca">
             <button className="cbtn pl" onClick={handlePlay} aria-label={`Play ${title}`} title="Play">
@@ -44,7 +63,8 @@ const LandscapeCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) =>
 
       <div style={{ padding: '8px 2px 4px' }}>
         <p style={{
-          color: '#e5e5e5', fontSize: 13, fontWeight: 600, lineHeight: 1.35,
+          color: isWatched ? '#888' : '#e5e5e5',
+          fontSize: 13, fontWeight: 600, lineHeight: 1.35,
           marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {title}

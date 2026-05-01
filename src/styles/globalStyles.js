@@ -29,6 +29,7 @@ export const injectStyles = () => {
     .sc:hover img, .sc:focus img { transform:scale(1.06); }
     .sc .ov { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.96) 0%, rgba(0,0,0,.25) 55%, transparent 100%); opacity:0; transition:opacity .25s; display:flex; flex-direction:column; justify-content:flex-end; padding:12px; pointer-events:none; }
     .sc:hover .ov, .sc:focus .ov { opacity:1; pointer-events:all; }
+    @media (hover:none) { .sc .ov { opacity:1; pointer-events:all; } }
     .sc .ov .ca { display:flex; gap:7px; margin-bottom:7px; }
     .cbtn { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid rgba(255,255,255,.75); background:rgba(0,0,0,.45); cursor:pointer; color:#fff; transition:all .15s; flex-shrink:0; }
     .cbtn.pl { background:#fff; border-color:#fff; color:#000; }
@@ -41,6 +42,8 @@ export const injectStyles = () => {
     .rarr.r { right:0; background:linear-gradient(to left,rgba(0,0,0,.85),transparent); }
     .rw:hover .rarr, .rw:focus-within .rarr { opacity:1; }
     .rarr svg { filter:drop-shadow(0 0 6px rgba(0,0,0,.8)); }
+    /* Always show on no-hover / TV devices */
+    @media (hover:none) { .rarr { opacity:.75; } }
 
     /* ── Buttons ── */
     .hbtn { display:inline-flex; align-items:center; gap:9px; padding:11px 26px; border-radius:5px; font-family:'DM Sans',sans-serif; font-size:16px; font-weight:600; cursor:pointer; border:none; transition:all .18s; white-space:nowrap; }
@@ -122,10 +125,12 @@ export const injectStyles = () => {
 
     /* ── Hero carousel prev/next arrows ── */
     .hero-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:8; background:rgba(0,0,0,.5); border:1.5px solid rgba(255,255,255,.25); color:#fff; border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; opacity:0; }
-    .hero-wrap:hover .hero-nav { opacity:1; }
-    .hero-nav:hover { background:rgba(255,255,255,.2); border-color:#fff; }
+    .hero-wrap:hover .hero-nav, .hero-wrap:focus-within .hero-nav { opacity:1; }
+    .hero-nav:hover, .hero-nav:focus-visible { background:rgba(255,255,255,.2); border-color:#fff; outline:none; }
     .hero-nav.prev { left:20px; }
     .hero-nav.next { right:20px; }
+    /* Always show on no-hover / TV devices */
+    @media (hover:none) { .hero-nav { opacity:.85; } }
 
     /* ── Smart TV / large screen ── */
     @media (min-width:1920px) {

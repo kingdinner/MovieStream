@@ -15,5 +15,5 @@ export const ROW_CONFIGS = [
   { key: 'comedy',          title: '😂 Comedies',           landscape: false, tab: 'movies', url: `${BASE_URL}/discover/movie?with_genres=35&sort_by=popularity.desc` },
   { key: 'trending_tv',     title: '📺 Trending TV Shows',  landscape: true,  tab: 'tv',     url: `${BASE_URL}/trending/tv/week` },
   { key: 'top_tv',          title: '🏆 Top Rated Series',   landscape: false, tab: 'tv',     url: `${BASE_URL}/tv/top_rated` },
-  { key: 'anime',           title: '🎌 Anime',              landscape: false, tab: 'tv',     url: `${BASE_URL}/discover/tv?with_genres=16&sort_by=popularity.desc` },
+  { key: 'anime',           title: '🎌 Latest Anime',       landscape: false, tab: 'tv',     url: `${BASE_URL}/discover/tv?with_genres=16&with_original_language=ja&sort_by=first_air_date.desc` },
 ];

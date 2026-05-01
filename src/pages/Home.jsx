@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import { API_KEY, BASE_URL, ROW_CONFIGS } from '../constants/api';
+import { useWatched } from '../context/WatchedContext';
 import { injectStyles } from '../styles/globalStyles';
 
 import Header        from '../components/layout/Header';
@@ -53,6 +54,8 @@ export default function Home() {
   const [myListItems, setMyListItems] = useState(
     () => JSON.parse(localStorage.getItem('mylist-items') || '[]')
   );
+
+  const { markWatched } = useWatched();
 
   const toastTimer   = useRef(null);
   const searchTimer  = useRef(null);
@@ -215,7 +218,8 @@ export default function Home() {
     if (ep !== null) setSelEpisode(ep);
     setPlaying(true);
     lockBody();
-  }, [lockBody]);
+    markWatched(item.id); /* flag as watched */
+  }, [lockBody, markWatched]);
 
   const selectItem = useCallback((item) => {
     setSelected(item);
