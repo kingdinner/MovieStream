@@ -89,7 +89,7 @@ export default function Home() {
       try {
         const ids = new Set();
         const fetchPage = async (type, page) => {
-          const res = await fetch(`https://vidsrc.xyz/${type}/latest/page-${page}.json`, { signal: AbortSignal.timeout(6000) });
+          const res = await fetch(`/vidsrc-api/${type}/latest/page-${page}.json`, { signal: AbortSignal.timeout(6000) });
           if (!res.ok) return;
           const data  = await res.json();
           const items = data?.result?.items ?? data?.items ?? (Array.isArray(data) ? data : []);

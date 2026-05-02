@@ -1,0 +1,5 @@
+[[redirects]]
+  from   = "/vidsrc-api/*"
+  to     = "https://vidsrc.xyz/:splat"
+  status = 200
+  force  = true
