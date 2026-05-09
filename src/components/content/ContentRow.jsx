@@ -16,7 +16,7 @@ const ContentRow = memo(({ title, items, landscape, onSelect, onPlay, onToggleLi
   return (
     <section style={{ marginBottom: 36 }}>
       {/* Row title */}
-      <h3 style={{
+      <h3 className="row-title" style={{
         color: '#e5e5e5', fontFamily: "'DM Sans',sans-serif",
         fontSize: 'clamp(16px,1.8vw,22px)', fontWeight: 700,
         padding: '0 4% 10px',
@@ -31,7 +31,7 @@ const ContentRow = memo(({ title, items, landscape, onSelect, onPlay, onToggleLi
         </button>
         <div
           ref={ref}
-          style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 4% 12px' }}
+          style={{ display: 'flex', gap: 'var(--row-gap, 8px)', overflowX: 'auto', padding: '4px 4% 12px' }}
         >
           {items.map(item => (
             landscape

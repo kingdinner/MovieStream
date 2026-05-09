@@ -40,13 +40,13 @@ export default function Header({
       borderBottom: (viewAllRow || showMyList) ? '1px solid rgba(255,255,255,.06)' : 'none',
       transition: 'background .35s ease',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      height: 66,
+      height: 'var(--header-h, 66px)',
     }}>
       {/* Left: logo + nav */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 32, height: '100%' }}>
         {/* Logo */}
         <div style={{
-          fontFamily: "'Bebas Neue',sans-serif", fontSize: 26,
+          fontFamily: "'Bebas Neue',sans-serif", fontSize: 'var(--header-logo-fs, 26px)',
           letterSpacing: 2, color: '#e50914', lineHeight: 1,
           userSelect: 'none', cursor: 'default',
           display: 'flex', alignItems: 'center', height: '100%',
@@ -74,7 +74,7 @@ export default function Header({
         {/* Search */}
         {searchOpen ? (
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-            <Search size={15} style={{ position: 'absolute', left: 10, color: 'rgba(255,255,255,.55)', pointerEvents: 'none' }} />
+            <Search size={15} style={{ position: 'absolute', left: 12, color: 'rgba(255,255,255,.55)', pointerEvents: 'none' }} />
             <input
               className="sinput"
               autoFocus
@@ -86,7 +86,7 @@ export default function Header({
             {searchQuery && (
               <button
                 onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchOpen(false); }}
-                style={{ position: 'absolute', right: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', display: 'flex', alignItems: 'center' }}
+                style={{ position: 'absolute', right: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', display: 'flex', alignItems: 'center' }}
               >
                 <X size={14} />
               </button>
@@ -95,20 +95,20 @@ export default function Header({
         ) : (
           <button
             onClick={() => setSearchOpen(true)}
-            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, padding: 0 }}
+            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'var(--header-icon-sz, 40px)', height: 'var(--header-icon-sz, 40px)', padding: 0 }}
             aria-label="Search"
           >
-            <Search size={20} />
+            <Search size={22} />
           </button>
         )}
 
         {/* My List */}
         <button
           onClick={() => setShowMyList(true)}
-          style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, padding: 0, position: 'relative' }}
+          style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'var(--header-icon-sz, 40px)', height: 'var(--header-icon-sz, 40px)', padding: 0, position: 'relative' }}
           aria-label="My List"
         >
-          <BookMarked size={20} />
+          <BookMarked size={22} />
           {myList.size > 0 && (
             <span style={{
               position: 'absolute', top: -2, right: -4,
@@ -123,10 +123,10 @@ export default function Header({
 
         {/* Notifications */}
         <button
-          style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, padding: 0 }}
+          style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 'var(--header-icon-sz, 40px)', height: 'var(--header-icon-sz, 40px)', padding: 0 }}
           aria-label="Notifications"
         >
-          <Bell size={20} />
+          <Bell size={22} />
         </button>
 
         {/* Avatar — click to return home */}
@@ -135,10 +135,11 @@ export default function Header({
           aria-label="Home"
           title="Home"
           style={{
-            width: 34, height: 34, borderRadius: 5, flexShrink: 0,
+            width: 'var(--avatar-sz, 36px)', height: 'var(--avatar-sz, 36px)',
+            borderRadius: 5, flexShrink: 0,
             background: 'linear-gradient(135deg, #e50914, #8b0000)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Bebas Neue',sans-serif", fontSize: 19, color: '#fff',
+            fontFamily: "'Bebas Neue',sans-serif", fontSize: 'var(--avatar-fs, 19px)', color: '#fff',
             cursor: 'pointer', userSelect: 'none', lineHeight: 1,
             border: 'none', padding: 0,
             transition: 'transform .15s ease, box-shadow .15s ease',

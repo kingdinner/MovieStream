@@ -1,23 +1,26 @@
-/* Bigger touch/focus targets */
-button, input, iframe {
-  min-height: 56px;
-  font-size: 18px;
-}
+/*
+ * tv.css — Smart TV / large-screen enhancements
+ *
+ * Rules here are scoped to ≥1920px so they never affect mobile or desktop.
+ * Sizing tokens are handled via CSS custom properties in globalStyles.js;
+ * this file handles anything that can't be done with a CSS variable alone.
+ */
 
-/* Focus ring for TV remote */
-:focus {
-  outline: 4px solid #e50914;
-  outline-offset: 4px;
-}
-
-/* Disable hover scaling (TV has no hover) */
-@media (hover: none) {
-  .hover\:scale-105:hover {
-    transform: none;
+/* ── Always-visible focus ring for remote navigation ── */
+@media (min-width: 1920px) {
+  :focus-visible {
+    outline: 4px solid #e50914;
+    outline-offset: 5px;
+    border-radius: 4px;
   }
-}
 
-/* Smooth scroll for rows */
-.scrollbar-hide {
-  scroll-behavior: smooth;
+  /* Bigger skeleton shimmer tiles in grids */
+  .shim {
+    animation-duration: 1.8s;
+  }
+
+  /* Smooth row scroll */
+  .rw > div {
+    scroll-behavior: smooth;
+  }
 }

@@ -18,14 +18,15 @@ const LandscapeCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) =>
 
   return (
     <div
-      style={{ width: 268, flexShrink: 0, cursor: 'pointer', outline: 'none' }}
+      className="landscape-card"
+      style={{ width: 'var(--card-ls-w, 268px)', flexShrink: 0, cursor: 'pointer', outline: 'none' }}
       onClick={() => onSelect(item)}
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
       aria-label={title}
     >
-      <div className="sc" style={{ width: 268, height: 151, display: 'block' }}>
+      <div className="sc" style={{ width: 'var(--card-ls-w, 268px)', height: 'var(--card-ls-h, 151px)', display: 'block' }}>
         {backdrop
           ? <img src={backdrop} alt={title} loading="lazy" decoding="async" />
           : <div className="shim" style={{ width: '100%', height: '100%' }} />
@@ -62,16 +63,16 @@ const LandscapeCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) =>
       </div>
 
       <div style={{ padding: '8px 2px 4px' }}>
-        <p style={{
+        <p className="card-label" style={{
           color: isWatched ? '#888' : '#e5e5e5',
-          fontSize: 13, fontWeight: 600, lineHeight: 1.35,
+          fontSize: 'var(--card-title-fs, 13px)', fontWeight: 600, lineHeight: 1.35,
           marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {title}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div className="card-meta" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <Star size={10} fill="#f5c518" color="#f5c518" />
-          <span style={{ color: '#999', fontSize: 11 }}>{item.vote_average?.toFixed(1)}</span>
+          <span style={{ color: '#999', fontSize: 'var(--card-meta-fs, 11px)' }}>{item.vote_average?.toFixed(1)}</span>
         </div>
       </div>
     </div>

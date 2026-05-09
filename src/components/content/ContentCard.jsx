@@ -19,14 +19,15 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
 
   return (
     <div
-      style={{ width: 155, flexShrink: 0, cursor: 'pointer', outline: 'none' }}
+      className="content-card"
+      style={{ width: 'var(--card-w, 155px)', flexShrink: 0, cursor: 'pointer', outline: 'none' }}
       onClick={() => onSelect(item)}
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
       aria-label={title}
     >
-      <div className="sc" style={{ width: 155, height: 232, display: 'block' }}>
+      <div className="sc" style={{ width: 'var(--card-w, 155px)', height: 'var(--card-h, 232px)', display: 'block' }}>
         {poster
           ? <img src={poster} alt={title} loading="lazy" decoding="async" />
           : <div className="shim" style={{ width: '100%', height: '100%' }} />
@@ -65,20 +66,20 @@ const ContentCard = memo(({ item, onSelect, onPlay, onToggleList, inList }) => {
 
       {/* Always-visible title + meta */}
       <div style={{ padding: '8px 2px 4px' }}>
-        <p style={{
+        <p className="card-label" style={{
           color: isWatched ? '#888' : '#e5e5e5',
-          fontSize: 13, fontWeight: 600, lineHeight: 1.35,
+          fontSize: 'var(--card-title-fs, 13px)', fontWeight: 600, lineHeight: 1.35,
           marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>
           {title}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <div className="card-meta" style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <Star size={10} fill="#f5c518" color="#f5c518" />
-          <span style={{ color: '#999', fontSize: 11 }}>{item.vote_average?.toFixed(1)}</span>
+          <span style={{ color: '#999', fontSize: 'var(--card-meta-fs, 11px)' }}>{item.vote_average?.toFixed(1)}</span>
           {year && (
             <>
-              <span style={{ color: '#444', fontSize: 11 }}>·</span>
-              <span style={{ color: '#777', fontSize: 11 }}>{year}</span>
+              <span style={{ color: '#444', fontSize: 'var(--card-meta-fs, 11px)' }}>·</span>
+              <span style={{ color: '#777', fontSize: 'var(--card-meta-fs, 11px)' }}>{year}</span>
             </>
           )}
         </div>

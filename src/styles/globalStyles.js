@@ -19,6 +19,27 @@ export const injectStyles = () => {
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: #000; font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+    /* ─── Design tokens — overridden at TV breakpoint ─── */
+    :root {
+      --card-w:         155px;
+      --card-h:         232px;
+      --card-ls-w:      268px;
+      --card-ls-h:      151px;
+      --header-h:       66px;
+      --header-logo-fs: 26px;
+      --hero-max-w:     560px;
+      --hero-title-max: 80px;
+      --hero-ovw-fs:    15px;
+      --card-title-fs:  13px;
+      --card-meta-fs:   11px;
+      --row-gap:        8px;
+      --grid-min-w:     155px;
+      --grid-ls-min-w:  268px;
+      --header-icon-sz: 40px;
+      --avatar-sz:      36px;
+      --avatar-fs:      19px;
+    }
     ::-webkit-scrollbar { display: none; }
     * { scrollbar-width: none; -ms-overflow-style: none; }
 
@@ -132,14 +153,68 @@ export const injectStyles = () => {
     /* Always show on no-hover / TV devices */
     @media (hover:none) { .hero-nav { opacity:.85; } }
 
-    /* ── Smart TV / large screen ── */
+    /* ─── Smart TV / large screen (≥1920 px) ─── */
     @media (min-width:1920px) {
-      .ni { font-size:18px; padding:10px 6px; }
-      .hbtn { font-size:20px; padding:14px 34px; }
-      .cbtn { width:40px; height:40px; }
-      .sinput { width:270px; font-size:16px; }
-      .rarr { min-width:60px; }
+      :root {
+        --card-w:         220px;
+        --card-h:         330px;
+        --card-ls-w:      380px;
+        --card-ls-h:      214px;
+        --header-h:       92px;
+        --header-logo-fs: 36px;
+        --hero-max-w:     760px;
+        --hero-title-max: 104px;
+        --hero-ovw-fs:    20px;
+        --card-title-fs:  17px;
+        --card-meta-fs:   14px;
+        --row-gap:        14px;
+        --grid-min-w:     212px;
+        --grid-ls-min-w:  368px;
+        --header-icon-sz: 54px;
+        --avatar-sz:      46px;
+        --avatar-fs:      24px;
+      }
+      /* Nav */
+      .ni { font-size:20px !important; height:54px !important; padding:0 18px !important; gap:10px !important; }
+      .ni.act::after { bottom:-9px !important; left:18px !important; right:18px !important; }
+      /* Buttons */
+      .hbtn { font-size:22px !important; padding:18px 46px !important; gap:12px !important; border-radius:7px !important; }
+      .cbtn { width:50px !important; height:50px !important; border-width:2.5px !important; }
+      /* Search */
+      .sinput { width:320px !important; font-size:18px !important; padding:10px 16px 10px 46px !important; }
+      /* Select + pagination */
+      .sels  { font-size:18px !important; padding:12px 18px !important; }
+      .pgbtn { font-size:20px !important; padding:18px 36px !important; min-width:64px !important; border-radius:10px !important; }
+      /* Toast */
+      .toast { font-size:18px !important; padding:14px 32px !important; border-radius:36px !important; bottom:48px !important; }
+      /* Modal */
+      .mbox     { max-width:1440px !important; border-radius:16px !important; }
+      .moverlay { padding:56px !important; }
+      /* Row arrows — always visible + bigger */
+      .rarr { min-width:100px !important; opacity:1 !important; }
+      /* Hero nav arrows */
+      .hero-nav       { width:74px !important; height:74px !important; }
+      .hero-nav.prev  { left:32px !important; }
+      .hero-nav.next  { right:32px !important; }
+      /* Hero dots */
+      .hero-dot    { width:12px !important; height:12px !important; min-width:12px !important; min-height:12px !important; }
+      .hero-dot.on { width:32px !important; max-width:32px !important; border-radius:6px !important; }
+      /* Hero text classes */
+      .hero-title    { font-size:clamp(64px,6.5vw,104px) !important; margin-bottom:20px !important; }
+      .hero-overview { font-size:20px !important; line-height:1.7 !important; margin-bottom:36px !important; -webkit-line-clamp:4 !important; }
+      /* Row */
+      .row-title    { font-size:28px !important; padding-bottom:18px !important; }
+      /* Browse pills */
+      .section-pill { font-size:16px !important; padding:12px 26px !important; border-radius:28px !important; }
+      /* Badges / match */
+      .b-match { font-size:20px !important; }
+      .badge   { font-size:15px !important; padding:4px 12px !important; }
+      /* Episode btn */
+      .epb { padding:18px 22px !important; gap:18px !important; font-size:16px !important; }
+      /* Focus ring — crisp on TV */
+      :focus-visible { outline:4px solid #e50914 !important; outline-offset:4px !important; }
     }
+
     @media (max-width:640px) {
       .ni span.nl { display:none; }
       .hbtn { padding:9px 16px; font-size:14px; }

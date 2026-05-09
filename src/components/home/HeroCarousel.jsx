@@ -42,7 +42,7 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,.9) 20%, rgba(0,0,0,.1) 65%, transparent 100%)' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #000 0%, rgba(0,0,0,.55) 30%, transparent 60%)' }} />
 
-          <div style={{ position: 'absolute', bottom: '22%', left: '4%', maxWidth: 560 }}>
+          <div style={{ position: 'absolute', bottom: '22%', left: '4%', maxWidth: 'var(--hero-max-w, 560px)' }}>
             {/* Badge */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 14, background: 'rgba(229,9,20,.12)', border: '1px solid rgba(229,9,20,.38)', padding: '4px 12px', borderRadius: 20 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#e50914' }} />
@@ -52,12 +52,12 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
             </div>
 
             {/* Title */}
-            <h1 style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 'clamp(42px,6.5vw,80px)', color: '#fff', lineHeight: .94, letterSpacing: 2, marginBottom: 14, textShadow: '0 2px 24px rgba(0,0,0,.6)' }}>
+            <h1 className="hero-title" style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 'clamp(42px,6.5vw,80px)', color: '#fff', lineHeight: .94, letterSpacing: 2, marginBottom: 14, textShadow: '0 2px 24px rgba(0,0,0,.6)' }}>
               {fi.title || fi.name}
             </h1>
 
             {/* Meta */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+            <div className="hero-meta" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
               <span className="b-match">{Math.round((fi.vote_average || 0) * 10)}% Match</span>
               <span style={{ color: '#aaa', fontSize: 14 }}>{(fi.release_date || fi.first_air_date || '').slice(0, 4)}</span>
               <span className="badge b-hd">HD</span>
@@ -65,7 +65,7 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
             </div>
 
             {/* Overview */}
-            <p style={{ color: 'rgba(255,255,255,.82)', fontSize: 15, lineHeight: 1.65, marginBottom: 24, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <p className="hero-overview" style={{ color: 'rgba(255,255,255,.82)', fontSize: 'var(--hero-ovw-fs, 15px)', lineHeight: 1.65, marginBottom: 24, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {fi.overview}
             </p>
 

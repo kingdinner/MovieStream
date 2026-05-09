@@ -83,8 +83,8 @@ export default function HomeGenreGrid({
   const visibleItems = filterAvailable(items);
   const isLandscape  = selectedCfg?.landscape;
   const gridCols     = isLandscape
-    ? 'repeat(auto-fill, minmax(268px, 1fr))'
-    : 'repeat(auto-fill, minmax(155px, 1fr))';
+    ? 'repeat(auto-fill, minmax(var(--grid-ls-min-w, 268px), 1fr))'
+    : 'repeat(auto-fill, minmax(var(--grid-min-w, 155px), 1fr))';
 
   return (
     <div style={{ padding: '8px 4% 60px' }}>

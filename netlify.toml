@@ -1,5 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+# ── Proxy: forwards /vidsrc-api/* to vidsrc.to server-side (bypasses CORS) ──
 [[redirects]]
   from   = "/vidsrc-api/*"
-  to     = "https://vidsrc.xyz/:splat"
+  to     = "https://vidsrc.to/:splat"
   status = 200
   force  = true
+
+# ── SPA fallback: serve index.html for every unmatched path ──
+# Required for React apps — without this Netlify returns 404 on refresh / direct URL
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

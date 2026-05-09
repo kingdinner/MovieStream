@@ -85,6 +85,9 @@ export default function Home() {
 
   /* Fetch streamable IDs from VidSrc */
   useEffect(() => {
+    // /vidsrc-api/* is proxied to vidsrc.to:
+    //   • locally  → src/setupProxy.js (CRA dev server proxy, no CORS)
+    //   • prod     → netlify.toml [[redirects]] (Netlify server-side proxy, no CORS)
     const run = async () => {
       try {
         const ids = new Set();
@@ -242,13 +245,21 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  /* ── Embed URL ── */
-  const embedSrc = useMemo(() => {
-    if (!selected) return '';
-    const base = selected.media_type === 'tv'
-      ? `https://vidsrc.xyz/embed/tv/${selected.id}/${selSeason}/${selEpisode}`
-      : `https://vidsrc.xyz/embed/movie/${selected.id}`;
-    return `${base}?ds_lang=en`;
+  /* ── Embed sources (tried in order when one returns 503 / fails) ── */
+  const embedSources = useMemo(() => {
+    if (!selected) return [];
+    const id   = selected.id;
+    const isTv = selected.media_type === 'tv';
+    const s = selSeason, e = selEpisode;
+    return isTv ? [
+      `https://vidsrc.to/embed/tv/${id}/${s}/${e}`,       // primary
+      `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,  // fallback 1
+      `https://embed.su/embed/tv/${id}/${s}/${e}`,        // fallback 2
+    ] : [
+      `https://vidsrc.to/embed/movie/${id}`,              // primary
+      `https://vidsrc.me/embed/movie?tmdb=${id}`,         // fallback 1
+      `https://embed.su/embed/movie/${id}`,               // fallback 2
+    ];
   }, [selected, selSeason, selEpisode]);
 
   /* ─────────── Render ─────────── */
@@ -268,7 +279,7 @@ export default function Home() {
       />
 
       {playing && selected && (
-        <PlayerModal selected={selected} closeAll={closeAll} embedSrc={embedSrc} selSeason={selSeason} selEpisode={selEpisode} />
+        <PlayerModal selected={selected} closeAll={closeAll} embedSources={embedSources} selSeason={selSeason} selEpisode={selEpisode} />
       )}
 
       {selected && !playing && (
