@@ -43,7 +43,7 @@ export default function Header({
       height: 'var(--header-h, 66px)',
     }}>
       {/* Left: logo + nav */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32, height: '100%' }}>
+      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: 32, height: '100%' }}>
         {/* Logo */}
         <div style={{
           fontFamily: "'Bebas Neue',sans-serif", fontSize: 'var(--header-logo-fs, 26px)',

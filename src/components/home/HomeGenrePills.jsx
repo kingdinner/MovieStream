@@ -27,6 +27,7 @@ const HomeGenrePills = memo(({ activeGenre, onChange }) => (
       return (
         <button
           key={pill.label}
+          className="genre-pill"
           onClick={() => onChange(pill.keys)}
           style={{
             flexShrink: 0,

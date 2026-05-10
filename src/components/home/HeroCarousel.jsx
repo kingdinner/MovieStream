@@ -19,7 +19,7 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
 
   if (!items.length) {
     return (
-      <div style={{ position: 'relative', height: '88vh', minHeight: 480, background: '#0d0d0d', marginBottom: -80 }}>
+      <div style={{ position: 'relative', height: 'clamp(360px, 88vh, 88vh)', minHeight: 360, background: '#0d0d0d', marginBottom: -80 }}>
         <div className="shim" style={{ width: '100%', height: '100%', position: 'absolute' }} />
       </div>
     );
@@ -28,7 +28,7 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
   return (
     <div
       className="hero-wrap"
-      style={{ position: 'relative', height: '88vh', minHeight: 480, marginBottom: -80, overflow: 'hidden' }}
+      style={{ position: 'relative', height: 'clamp(360px, 88vh, 88vh)', minHeight: 360, marginBottom: -80, overflow: 'hidden' }}
     >
       {/* Slides */}
       {items.map((fi, i) => (
@@ -42,7 +42,7 @@ const HeroCarousel = memo(({ items, activeIdx, setActiveIdx, onPlay, onSelect })
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,.9) 20%, rgba(0,0,0,.1) 65%, transparent 100%)' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #000 0%, rgba(0,0,0,.55) 30%, transparent 60%)' }} />
 
-          <div style={{ position: 'absolute', bottom: '22%', left: '4%', maxWidth: 'var(--hero-max-w, 560px)' }}>
+          <div style={{ position: 'absolute', bottom: 'clamp(90px, 20%, 26%)', left: '4%', right: '4%', maxWidth: 'var(--hero-max-w, 560px)' }}>
             {/* Badge */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 14, background: 'rgba(229,9,20,.12)', border: '1px solid rgba(229,9,20,.38)', padding: '4px 12px', borderRadius: 20 }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#e50914' }} />

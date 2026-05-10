@@ -246,19 +246,20 @@ export default function Home() {
   }, []);
 
   /* ── Embed sources (tried in order when one returns 503 / fails) ── */
+  /* Using 2026-active domains — vidsrc.to & vidsrc.me are deprecated/dead. */
   const embedSources = useMemo(() => {
     if (!selected) return [];
     const id   = selected.id;
     const isTv = selected.media_type === 'tv';
     const s = selSeason, e = selEpisode;
     return isTv ? [
-      `https://vidsrc.to/embed/tv/${id}/${s}/${e}`,       // primary
-      `https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,  // fallback 1
-      `https://embed.su/embed/tv/${id}/${s}/${e}`,        // fallback 2
+      `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?sub=en`,   // primary   – vidsrc.cc (active 2026)
+      `https://vidsrc.fyi/embed/tv/${id}/${s}/${e}`,            // fallback 1 – vidsrc.fyi
+      `https://embed.su/embed/tv/${id}/${s}/${e}`,              // fallback 2 – embed.su
     ] : [
-      `https://vidsrc.to/embed/movie/${id}`,              // primary
-      `https://vidsrc.me/embed/movie?tmdb=${id}`,         // fallback 1
-      `https://embed.su/embed/movie/${id}`,               // fallback 2
+      `https://vidsrc.cc/v2/embed/movie/${id}?sub=en`,          // primary   – vidsrc.cc (active 2026)
+      `https://vidsrc.fyi/embed/movie/${id}`,                   // fallback 1 – vidsrc.fyi
+      `https://embed.su/embed/movie/${id}`,                     // fallback 2 – embed.su
     ];
   }, [selected, selSeason, selEpisode]);
 
@@ -279,7 +280,15 @@ export default function Home() {
       />
 
       {playing && selected && (
-        <PlayerModal selected={selected} closeAll={closeAll} embedSources={embedSources} selSeason={selSeason} selEpisode={selEpisode} />
+        <PlayerModal
+          selected={selected}
+          closeAll={closeAll}
+          embedSources={embedSources}
+          selSeason={selSeason}
+          selEpisode={selEpisode}
+          episodes={episodes}
+          setSelEpisode={setSelEpisode}
+        />
       )}
 
       {selected && !playing && (

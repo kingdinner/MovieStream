@@ -215,10 +215,188 @@ export const injectStyles = () => {
       :focus-visible { outline:4px solid #e50914 !important; outline-offset:4px !important; }
     }
 
+    /* ─── Tablet (641–1024 px) ─── */
+    @media (min-width:641px) and (max-width:1024px) {
+      :root {
+        --card-w:         130px;
+        --card-h:         195px;
+        --card-ls-w:      220px;
+        --card-ls-h:      124px;
+        --header-h:       60px;
+        --hero-max-w:     480px;
+        --hero-ovw-fs:    14px;
+        --row-gap:        6px;
+        --grid-min-w:     130px;
+        --grid-ls-min-w:  220px;
+      }
+      .hbtn { padding:10px 20px; font-size:15px; }
+    }
+
+    /* ─── Mobile (≤640 px) ─── */
     @media (max-width:640px) {
+      :root {
+        --card-w:         115px;
+        --card-h:         172px;
+        --card-ls-w:      190px;
+        --card-ls-h:      107px;
+        --header-h:       54px;
+        --header-logo-fs: 22px;
+        --hero-max-w:     100%;
+        --hero-ovw-fs:    13px;
+        --row-gap:        7px;
+        --grid-min-w:     115px;
+        --grid-ls-min-w:  190px;
+        --header-icon-sz: 36px;
+        --avatar-sz:      30px;
+        --avatar-fs:      16px;
+      }
       .ni span.nl { display:none; }
-      .hbtn { padding:9px 16px; font-size:14px; }
+      .ni { padding:0 7px !important; height:32px !important; }
+      .hbtn { padding:9px 16px; font-size:14px; gap:7px; }
       .hero-nav { display:none; }
+      /* Hero text on mobile */
+      .hero-title { font-size:clamp(26px,7.5vw,44px) !important; letter-spacing:1px !important; margin-bottom:10px !important; }
+      .hero-overview { -webkit-line-clamp:2 !important; font-size:13px !important; margin-bottom:14px !important; }
+      .hero-meta { gap:7px !important; margin-bottom:12px !important; }
+      /* Modal full-screen sheet on mobile */
+      .moverlay { padding:0 !important; align-items:flex-end !important; }
+      .mbox { border-radius:16px 16px 0 0 !important; max-height:94vh; overflow-y:auto; width:100% !important; }
+      /* Search input */
+      .sinput { width:150px !important; font-size:13px !important; padding:7px 12px 7px 34px !important; }
+      /* Episode button on mobile */
+      .epb { padding:10px 12px !important; gap:10px !important; font-size:13px !important; }
+      /* Row arrows hidden on mobile — rely on swipe */
+      .rarr { display:none !important; }
+      /* Genre pills compact on mobile */
+      .genre-pill { padding:6px 14px !important; font-size:12px !important; }
+      /* Player header on mobile */
+      .player-bar { padding:10px 12px !important; gap:10px !important; }
+      .player-src-btns { display:none !important; }
+      .player-ep-bar { padding:9px 12px !important; gap:8px !important; }
+      .player-ep-bar button { padding:7px 12px !important; font-size:13px !important; }
+      /* Toast */
+      .toast { font-size:13px !important; padding:9px 18px !important; bottom:20px !important; }
+      /* Row title */
+      .row-title { font-size:15px !important; padding-bottom:8px !important; }
+      /* Cards: always-visible overlay on mobile (no hover) */
+      .sc .ov { opacity:1; pointer-events:all; }
+      .cbtn { width:28px !important; height:28px !important; }
+    }
+
+    /* ─── Small phone (≤480 px — iPhone SE, Galaxy A-series) ─── */
+    @media (max-width:480px) {
+      :root {
+        --card-w:         100px;
+        --card-h:         150px;
+        --card-ls-w:      168px;
+        --card-ls-h:      95px;
+        --header-logo-fs: 20px;
+        --header-h:       50px;
+        --grid-min-w:     100px;
+        --grid-ls-min-w:  168px;
+        --header-icon-sz: 32px;
+        --avatar-sz:      27px;
+        --avatar-fs:      15px;
+        --row-gap:        6px;
+      }
+      .hero-title { font-size:clamp(22px,8.5vw,38px) !important; }
+      .hbtn { padding:8px 14px; font-size:13px; gap:6px; }
+      .mbox { border-radius:12px 12px 0 0 !important; }
+      /* Ep thumbnail smaller */
+      .ep-thumb { width:90px !important; height:51px !important; }
+      /* Header: tighter on tiny screens */
+      .header-left { gap:12px !important; }
+      .ni { padding:0 5px !important; }
+      /* Genre pills even more compact */
+      .genre-pill { padding:5px 11px !important; font-size:11px !important; }
+    }
+
+    /* ─── QHD / 2K (≥2560 px) ─── */
+    @media (min-width:2560px) {
+      :root {
+        --card-w:         280px;
+        --card-h:         420px;
+        --card-ls-w:      480px;
+        --card-ls-h:      270px;
+        --header-h:       110px;
+        --header-logo-fs: 44px;
+        --hero-max-w:     900px;
+        --hero-title-max: 128px;
+        --hero-ovw-fs:    24px;
+        --card-title-fs:  20px;
+        --card-meta-fs:   16px;
+        --row-gap:        18px;
+        --grid-min-w:     260px;
+        --grid-ls-min-w:  460px;
+        --header-icon-sz: 64px;
+        --avatar-sz:      54px;
+        --avatar-fs:      28px;
+      }
+      .ni { font-size:24px !important; height:64px !important; padding:0 24px !important; }
+      .hbtn { font-size:26px !important; padding:22px 56px !important; border-radius:8px !important; }
+      .cbtn { width:60px !important; height:60px !important; border-width:3px !important; }
+      .sinput { width:380px !important; font-size:22px !important; }
+      .sels { font-size:22px !important; padding:14px 22px !important; }
+      .pgbtn { font-size:24px !important; padding:22px 44px !important; border-radius:12px !important; }
+      .toast { font-size:22px !important; padding:18px 40px !important; }
+      .mbox { max-width:1800px !important; border-radius:20px !important; }
+      .moverlay { padding:72px !important; }
+      .rarr { min-width:120px !important; opacity:1 !important; }
+      .hero-nav { width:90px !important; height:90px !important; }
+      .hero-dot { width:14px !important; height:14px !important; }
+      .hero-dot.on { width:38px !important; max-width:38px !important; }
+      .hero-title { font-size:clamp(80px,7vw,128px) !important; }
+      .hero-overview { font-size:24px !important; -webkit-line-clamp:4 !important; }
+      .row-title { font-size:32px !important; }
+      .badge { font-size:17px !important; padding:5px 14px !important; }
+      .b-match { font-size:24px !important; }
+      .epb { padding:22px 28px !important; gap:22px !important; font-size:20px !important; }
+      .player-bar { padding:18px 28px !important; }
+      :focus-visible { outline:5px solid #e50914 !important; outline-offset:5px !important; }
+    }
+
+    /* ─── 4K / 60-inch TV (≥3840 px) ─── */
+    @media (min-width:3840px) {
+      :root {
+        --card-w:         380px;
+        --card-h:         570px;
+        --card-ls-w:      640px;
+        --card-ls-h:      360px;
+        --header-h:       150px;
+        --header-logo-fs: 60px;
+        --hero-max-w:     1200px;
+        --hero-ovw-fs:    32px;
+        --card-title-fs:  28px;
+        --card-meta-fs:   22px;
+        --row-gap:        24px;
+        --grid-min-w:     360px;
+        --grid-ls-min-w:  620px;
+        --header-icon-sz: 88px;
+        --avatar-sz:      72px;
+        --avatar-fs:      38px;
+      }
+      .ni { font-size:32px !important; height:88px !important; padding:0 32px !important; }
+      .hbtn { font-size:34px !important; padding:30px 72px !important; gap:16px !important; border-radius:10px !important; }
+      .cbtn { width:80px !important; height:80px !important; border-width:4px !important; }
+      .sinput { width:520px !important; font-size:30px !important; padding:16px 22px 16px 64px !important; }
+      .sels { font-size:30px !important; padding:18px 28px !important; }
+      .pgbtn { font-size:32px !important; padding:30px 60px !important; border-radius:16px !important; }
+      .toast { font-size:30px !important; padding:24px 56px !important; border-radius:50px !important; bottom:72px !important; }
+      .mbox { max-width:2400px !important; border-radius:28px !important; }
+      .moverlay { padding:96px !important; }
+      .rarr { min-width:160px !important; opacity:1 !important; }
+      .hero-nav { width:120px !important; height:120px !important; }
+      .hero-dot { width:20px !important; height:20px !important; }
+      .hero-dot.on { width:52px !important; max-width:52px !important; }
+      .hero-title { font-size:clamp(100px,8vw,180px) !important; }
+      .hero-overview { font-size:32px !important; -webkit-line-clamp:4 !important; }
+      .row-title { font-size:44px !important; }
+      .badge { font-size:24px !important; padding:8px 20px !important; }
+      .b-match { font-size:32px !important; }
+      .epb { padding:32px 40px !important; gap:32px !important; font-size:28px !important; }
+      .player-bar { padding:28px 40px !important; gap:24px !important; }
+      .player-ep-bar { padding:24px 40px !important; }
+      :focus-visible { outline:6px solid #e50914 !important; outline-offset:6px !important; }
     }
   `;
   document.head.appendChild(el);

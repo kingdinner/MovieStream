@@ -1,20 +1,30 @@
-import { useState, useEffect } from 'react';
-import { ArrowLeft, AlertTriangle, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, AlertTriangle, RefreshCw, SkipBack, SkipForward } from 'lucide-react';
 
 /**
  * PlayerModal
  *
- * Full-screen iframe player with multi-source fallback.
- *
- * - Cycles through embedSources[] when the user hits "Try another source"
- * - Shows a "Not loading?" nudge after 10 s so the user knows to switch sources
- * - 503 / unavailable titles show a clear error state
+ * Full-screen iframe player with:
+ *  - Multi-source fallback (cycles through embedSources[])
+ *  - "Not loading?" nudge after 5 s
+ *  - ← Prev Episode / Next Episode → navigation for TV shows
+ *  - Responsive layout (mobile / desktop / smart TV)
  */
-export default function PlayerModal({ selected, closeAll, embedSources = [], selSeason, selEpisode }) {
-  const [srcIdx,     setSrcIdx]     = useState(0);
-  const [loadError,  setLoadError]  = useState(false);
-  const [loaded,     setLoaded]     = useState(false);
-  const [nudge,      setNudge]      = useState(false);   // "Not loading?" hint
+export default function PlayerModal({
+  selected,
+  closeAll,
+  embedSources = [],
+  selSeason,
+  selEpisode,
+  episodes = [],
+  setSelEpisode,
+}) {
+  const [srcIdx,    setSrcIdx]    = useState(0);
+  const [loadError, setLoadError] = useState(false);
+  const [loaded,    setLoaded]    = useState(false);
+  const [nudge,     setNudge]     = useState(false);
+
+  const iframeRef = useRef(null);
 
   const title  = selected.title || selected.name || '';
   const isTv   = selected.media_type === 'tv';
@@ -22,24 +32,63 @@ export default function PlayerModal({ selected, closeAll, embedSources = [], sel
   const total  = embedSources.length;
   const hasNext = srcIdx < total - 1;
 
-  /* Reset state when source changes */
+  /* Episode navigation helpers (TV only) */
+  const currentEpIdx = isTv
+    ? episodes.findIndex(ep => ep.episode_number === selEpisode)
+    : -1;
+  const hasPrevEp = isTv && currentEpIdx > 0;
+  const hasNextEp = isTv && currentEpIdx >= 0 && currentEpIdx < episodes.length - 1;
+
+  const goPrevEp = () => {
+    if (!hasPrevEp) return;
+    setSrcIdx(0);
+    setSelEpisode(episodes[currentEpIdx - 1].episode_number);
+  };
+
+  const goNextEp = () => {
+    if (!hasNextEp) return;
+    setSrcIdx(0);
+    setSelEpisode(episodes[currentEpIdx + 1].episode_number);
+  };
+
+  /* Reset state when source index changes */
   useEffect(() => {
     setLoaded(false);
     setLoadError(false);
     setNudge(false);
   }, [srcIdx]);
 
-  /* Show "Not loading?" nudge 5 s after switching to a source */
+  /* Reset source index when episode changes */
   useEffect(() => {
-    if (loaded || loadError) return;
-    const t = setTimeout(() => setNudge(true), 5000);
-    return () => clearTimeout(t);
-  }, [srcIdx, loaded, loadError]);
+    setSrcIdx(0);
+  }, [selEpisode]);
 
-  // Called both by onError (auto) and by the manual "Try Source N" button.
+  /*
+   * Show "Try another source" nudge after 8 s regardless of whether the
+   * iframe fired onLoad — embed players often load their own error pages
+   * (e.g. "This media is unavailable") which still trigger onLoad, so we
+   * cannot rely on the loaded flag alone to decide if playback is healthy.
+   */
+  useEffect(() => {
+    if (loadError) return;
+    const t = setTimeout(() => setNudge(true), 8000);
+    return () => clearTimeout(t);
+  }, [srcIdx, loadError]);
+
+  /* Keyboard: left/right arrow = prev/next episode */
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft')  goPrevEp();
+      if (e.key === 'ArrowRight') goNextEp();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentEpIdx, episodes]);
+
   const tryNext = () => {
     if (hasNext) {
-      setSrcIdx(i => i + 1);   // resets loaded/loadError/nudge via the effect above
+      setSrcIdx(i => i + 1);
     } else {
       setLoadError(true);
     }
@@ -53,14 +102,18 @@ export default function PlayerModal({ selected, closeAll, embedSources = [], sel
     }}>
 
       {/* ── Top bar ── */}
-      <div style={{
-        position: 'relative', zIndex: 10,
-        display: 'flex', alignItems: 'center', gap: 14,
-        padding: '12px 20px',
-        background: 'rgba(0,0,0,.95)',
-        borderBottom: '1px solid rgba(255,255,255,.08)',
-        flexShrink: 0,
-      }}>
+      <div
+        className="player-bar"
+        style={{
+          position: 'relative', zIndex: 10,
+          display: 'flex', alignItems: 'center', gap: 14,
+          padding: '12px 20px',
+          background: 'rgba(0,0,0,.95)',
+          borderBottom: '1px solid rgba(255,255,255,.08)',
+          flexShrink: 0,
+          flexWrap: 'wrap',
+        }}
+      >
         {/* Back */}
         <button
           onClick={closeAll}
@@ -96,14 +149,14 @@ export default function PlayerModal({ selected, closeAll, embedSources = [], sel
 
         {/* Source selector */}
         {total > 1 && !loadError && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div className="player-src-btns" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <span style={{ color: '#666', fontSize: 12, fontFamily: "'DM Sans',sans-serif" }}>
               Source
             </span>
             {embedSources.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setSrcIdx(i)}
+                onClick={() => { setSrcIdx(i); setNudge(false); }}
                 title={`Source ${i + 1}`}
                 style={{
                   width: 30, height: 30, borderRadius: 6,
@@ -154,7 +207,7 @@ export default function PlayerModal({ selected, closeAll, embedSources = [], sel
           <div className="shim" style={{ position: 'absolute', inset: 0 }} />
         )}
 
-        {/* "Not loading?" nudge — shown after 5 s if video hasn't started */}
+        {/* "Not loading?" nudge */}
         {nudge && !loadError && hasNext && (
           <div style={{
             position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)',
@@ -182,6 +235,7 @@ export default function PlayerModal({ selected, closeAll, embedSources = [], sel
         )}
 
         <iframe
+          ref={iframeRef}
           key={src}
           src={src}
           title={`${title} — Player`}
@@ -198,6 +252,72 @@ export default function PlayerModal({ selected, closeAll, embedSources = [], sel
           onError={tryNext}
         />
       </div>
+
+      {/* ── Episode navigation bar (TV only) ── */}
+      {isTv && (hasPrevEp || hasNextEp) && (
+        <div
+          className="player-ep-bar"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 20px',
+            background: 'rgba(0,0,0,.95)',
+            borderTop: '1px solid rgba(255,255,255,.08)',
+            flexShrink: 0, gap: 12,
+          }}
+        >
+          {/* Prev Episode */}
+          <button
+            onClick={goPrevEp}
+            disabled={!hasPrevEp}
+            aria-label="Previous episode"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: hasPrevEp ? 'rgba(255,255,255,.1)' : 'rgba(255,255,255,.03)',
+              border: `1.5px solid ${hasPrevEp ? 'rgba(255,255,255,.25)' : 'rgba(255,255,255,.08)'}`,
+              borderRadius: 8, color: hasPrevEp ? '#fff' : '#444',
+              padding: '9px 18px', cursor: hasPrevEp ? 'pointer' : 'not-allowed',
+              fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 600,
+              transition: 'all .18s',
+            }}
+            onMouseEnter={e => { if (hasPrevEp) e.currentTarget.style.background = 'rgba(255,255,255,.2)'; }}
+            onMouseLeave={e => { if (hasPrevEp) e.currentTarget.style.background = 'rgba(255,255,255,.1)'; }}
+          >
+            <SkipBack size={16} />
+            <span>Prev Episode</span>
+          </button>
+
+          {/* Current episode indicator */}
+          <span style={{
+            color: '#888', fontSize: 13, fontFamily: "'DM Sans',sans-serif",
+            textAlign: 'center', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>
+            {episodes[currentEpIdx]?.name
+              ? `E${selEpisode} · ${episodes[currentEpIdx].name}`
+              : `Season ${selSeason} · Episode ${selEpisode}`}
+          </span>
+
+          {/* Next Episode */}
+          <button
+            onClick={goNextEp}
+            disabled={!hasNextEp}
+            aria-label="Next episode"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: hasNextEp ? 'rgba(229,9,20,.15)' : 'rgba(255,255,255,.03)',
+              border: `1.5px solid ${hasNextEp ? 'rgba(229,9,20,.4)' : 'rgba(255,255,255,.08)'}`,
+              borderRadius: 8, color: hasNextEp ? '#ff7070' : '#444',
+              padding: '9px 18px', cursor: hasNextEp ? 'pointer' : 'not-allowed',
+              fontFamily: "'DM Sans',sans-serif", fontSize: 14, fontWeight: 600,
+              transition: 'all .18s',
+            }}
+            onMouseEnter={e => { if (hasNextEp) e.currentTarget.style.background = 'rgba(229,9,20,.28)'; }}
+            onMouseLeave={e => { if (hasNextEp) e.currentTarget.style.background = 'rgba(229,9,20,.15)'; }}
+          >
+            <span>Next Episode</span>
+            <SkipForward size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

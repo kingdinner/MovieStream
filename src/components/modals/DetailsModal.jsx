@@ -193,7 +193,7 @@ export default function DetailsModal({
                   style={{ padding: '12px 16px' }}
                 >
                   {/* Thumbnail */}
-                  <div style={{
+                  <div className="ep-thumb" style={{
                     width: 120, height: 68, borderRadius: 5, flexShrink: 0,
                     overflow: 'hidden', position: 'relative',
                     background: 'rgba(255,255,255,.07)',

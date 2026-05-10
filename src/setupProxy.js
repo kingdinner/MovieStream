@@ -12,7 +12,7 @@ module.exports = function (app) {
   app.use(
     '/vidsrc-api',
     createProxyMiddleware({
-      target: 'https://vidsrc.to',
+      target: 'https://vidsrc.cc',
       changeOrigin: true,
       pathRewrite: { '^/vidsrc-api': '' },
     })
