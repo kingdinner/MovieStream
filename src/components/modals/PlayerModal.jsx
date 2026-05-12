@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, AlertTriangle, RefreshCw, SkipBack, SkipForward } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, SkipBack, SkipForward } from 'lucide-react';
 
 /**
  * PlayerModal
@@ -22,7 +22,6 @@ export default function PlayerModal({
   const [srcIdx,    setSrcIdx]    = useState(0);
   const [loadError, setLoadError] = useState(false);
   const [loaded,    setLoaded]    = useState(false);
-  const [nudge,     setNudge]     = useState(false);
 
   const iframeRef = useRef(null);
 
@@ -55,25 +54,12 @@ export default function PlayerModal({
   useEffect(() => {
     setLoaded(false);
     setLoadError(false);
-    setNudge(false);
   }, [srcIdx]);
 
   /* Reset source index when episode changes */
   useEffect(() => {
     setSrcIdx(0);
   }, [selEpisode]);
-
-  /*
-   * Show "Try another source" nudge after 8 s regardless of whether the
-   * iframe fired onLoad — embed players often load their own error pages
-   * (e.g. "This media is unavailable") which still trigger onLoad, so we
-   * cannot rely on the loaded flag alone to decide if playback is healthy.
-   */
-  useEffect(() => {
-    if (loadError) return;
-    const t = setTimeout(() => setNudge(true), 8000);
-    return () => clearTimeout(t);
-  }, [srcIdx, loadError]);
 
   /* Keyboard: left/right arrow = prev/next episode */
   useEffect(() => {
@@ -148,7 +134,7 @@ export default function PlayerModal({
         </div>
 
         {/* Source selector */}
-        {total > 1 && !loadError && (
+        {total > 1 && (
           <div className="player-src-btns" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <span style={{ color: '#666', fontSize: 12, fontFamily: "'DM Sans',sans-serif" }}>
               Source
@@ -156,7 +142,7 @@ export default function PlayerModal({
             {embedSources.map((_, i) => (
               <button
                 key={i}
-                onClick={() => { setSrcIdx(i); setNudge(false); }}
+                onClick={() => { setSrcIdx(i); setLoadError(false); }}
                 title={`Source ${i + 1}`}
                 style={{
                   width: 30, height: 30, borderRadius: 6,
@@ -207,32 +193,6 @@ export default function PlayerModal({
           <div className="shim" style={{ position: 'absolute', inset: 0 }} />
         )}
 
-        {/* "Not loading?" nudge */}
-        {nudge && !loadError && hasNext && (
-          <div style={{
-            position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)',
-            zIndex: 6, background: 'rgba(0,0,0,.92)',
-            border: '1px solid rgba(255,255,255,.15)', borderRadius: 10,
-            padding: '12px 20px', display: 'flex', alignItems: 'center', gap: 12,
-            fontFamily: "'DM Sans',sans-serif", whiteSpace: 'nowrap',
-          }}>
-            <span style={{ color: '#aaa', fontSize: 14 }}>
-              Source {srcIdx + 1} not responding
-            </span>
-            <button
-              onClick={tryNext}
-              style={{
-                background: '#e50914', border: 'none', borderRadius: 6,
-                color: '#fff', fontSize: 13, fontWeight: 700,
-                padding: '7px 16px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                fontFamily: "'DM Sans',sans-serif",
-              }}
-            >
-              <RefreshCw size={13} /> Try Source {srcIdx + 2}
-            </button>
-          </div>
-        )}
 
         <iframe
           ref={iframeRef}
