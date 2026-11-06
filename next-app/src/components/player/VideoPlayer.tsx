@@ -23,6 +23,13 @@ import {
   type MediaItem,
 } from '@/lib/schemas';
 import {
+  clampSeekPercentage,
+  clampVolumeLevel,
+  createPlayerCommandPayload,
+  IFRAME_ALLOW_PERMISSIONS,
+  resolveNextSourceState,
+} from '@/lib/video/adapter';
+import {
   buildAuthorizedVideoSources,
   SUBTITLE_OPTIONS,
   type SubtitleLanguage,
@@ -130,23 +137,33 @@ export default function VideoPlayer({
   }, [srcIdx, loadError]);
 
   const tryNextSource = useCallback(() => {
-    if (hasNextSource) {
-      setSrcIdx((prev) => prev + 1);
-    } else {
-      setLoadError(true);
-    }
-  }, [hasNextSource]);
+    const nextState = resolveNextSourceState(srcIdx, totalSources);
+    setSrcIdx(nextState.nextIndex);
+    setLoadError(nextState.loadError);
+  }, [srcIdx, totalSources]);
 
-  const postPlayerCommand = useCallback((command: string, value?: unknown) => {
-    try {
-      iframeRef.current?.contentWindow?.postMessage(
-        JSON.stringify({ event: 'command', func: command, args: value !== undefined ? [value] : [] }),
-        '*'
-      );
-    } catch {
-      // Cross-origin frame may ignore custom postMessage
-    }
-  }, []);
+  const postPlayerCommand = useCallback(
+    (
+      command:
+        | 'playVideo'
+        | 'pauseVideo'
+        | 'seekTo'
+        | 'mute'
+        | 'unMute'
+        | 'setVolume',
+      value?: number | string
+    ) => {
+      try {
+        iframeRef.current?.contentWindow?.postMessage(
+          createPlayerCommandPayload(command, value),
+          '*'
+        );
+      } catch {
+        // Cross-origin frame may ignore custom postMessage
+      }
+    },
+    []
+  );
 
   const togglePlayPause = useCallback(() => {
     setIsPlaying((prev) => {
@@ -159,7 +176,7 @@ export default function VideoPlayer({
   const handleSeek = useCallback(
     (delta: number) => {
       setSeekProgress((prev) => {
-        const next = Math.max(0, Math.min(100, prev + delta));
+        const next = clampSeekPercentage(prev, delta);
         postPlayerCommand('seekTo', next);
         return next;
       });
@@ -177,7 +194,7 @@ export default function VideoPlayer({
 
   const handleVolumeChange = useCallback(
     (nextVol: number) => {
-      const clamped = Math.max(0, Math.min(100, nextVol));
+      const clamped = clampVolumeLevel(nextVol);
       setVolume(clamped);
       setIsMuted(clamped === 0);
       postPlayerCommand('setVolume', clamped);
@@ -210,7 +227,8 @@ export default function VideoPlayer({
       setIsFullscreen(Boolean(document.fullscreenElement));
     };
     document.addEventListener('fullscreenchange', onFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+    return () =>
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
   }, []);
 
   // Keyboard shortcuts for accessible playback
@@ -251,7 +269,7 @@ export default function VideoPlayer({
           : 'relative w-full aspect-video bg-black flex flex-col rounded-xl overflow-hidden border border-white/15 shadow-2xl'
       }
     >
-      {/* Top Bar: Back Button, Title, Subtitle Selector, and Source Selector (Visible on Mobile & Desktop) */}
+      {/* Top Bar: Back Button, Title, and Source Selector (Visible on Mobile & Desktop) */}
       <div className="relative z-10 flex items-center justify-between gap-3 px-3 sm:px-5 py-2.5 bg-black/95 border-b border-white/10 shrink-0 flex-wrap">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {onClose && (
@@ -400,7 +418,7 @@ export default function VideoPlayer({
               loaded ? 'opacity-100' : 'opacity-90'
             }`}
             allowFullScreen
-            allow="autoplay; fullscreen; picture-in-picture"
+            allow={IFRAME_ALLOW_PERMISSIONS}
             referrerPolicy="origin"
             onLoad={() => setLoaded(true)}
             onError={tryNextSource}
