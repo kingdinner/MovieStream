@@ -79,7 +79,10 @@ const LandscapeCard = memo(({ item }: LandscapeCardProps) => {
         )}
 
         {watched && (
-          <div className="absolute top-1.5 left-1.5 z-10 bg-[#46d369]/95 rounded px-1.5 py-0.5 flex items-center gap-1 shadow">
+          <div
+            data-testid={`watched-badge-${item.id}`}
+            className="absolute top-1.5 left-1.5 z-10 bg-[#46d369]/95 rounded px-1.5 py-0.5 flex items-center gap-1 shadow"
+          >
             <Eye className="w-2.5 h-2.5 text-white" />
             <span className="text-white text-[9px] font-bold tracking-wider uppercase">
               WATCHED
