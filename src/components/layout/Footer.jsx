@@ -17,7 +17,7 @@ export default function Footer() {
         KVFilmZone
       </div>
       <p style={{ color: '#444', fontSize: 13, maxWidth: 480, lineHeight: 1.65 }}>
-        Powered by TMDB · Streaming via VidSrc · For personal use only
+        Powered by TMDB · Streaming via VidCore · For personal use only
       </p>
     </footer>
   );

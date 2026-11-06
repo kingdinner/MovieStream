@@ -66,8 +66,7 @@ export const PaginatedResponseSchema = z.object({
 
 export const ALLOWED_IMAGE_HOSTS = ['image.tmdb.org'] as const;
 export const ALLOWED_PROVIDER_HOSTS = [
-  'vidsrc.cc',
-  'vidsrc.fyi',
+  'vidcore.org',
   'embed.su',
 ] as const;
 

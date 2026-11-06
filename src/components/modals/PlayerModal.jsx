@@ -206,8 +206,10 @@ export default function PlayerModal({
             opacity: loaded && !loadError ? 1 : 0,
             transition: 'opacity .3s',
           }}
+          sandbox="allow-scripts allow-same-origin"
           allowFullScreen
-          allow="autoplay; fullscreen; picture-in-picture"
+          allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+          referrerPolicy="no-referrer"
           onLoad={() => setLoaded(true)}
           onError={tryNext}
         />

@@ -13,7 +13,7 @@ export const SUBTITLE_OPTIONS: readonly { code: SubtitleLanguage; label: string 
 ] as const;
 
 export interface VideoSourceDescriptor {
-  providerId: 'vidsrc_cc' | 'vidsrc_fyi' | 'embed_su';
+  providerId: 'vidcore' | 'embed_su';
   name: string;
   hostname: string;
   url: string;

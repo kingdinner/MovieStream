@@ -2,9 +2,9 @@ import { AuthorizedProviderUrlSchema } from '@/lib/schemas';
 import { type SubtitleLanguage, type VideoSourceDescriptor } from './providers';
 
 export interface VideoProviderAdapter {
-  readonly id: 'vidsrc_cc' | 'vidsrc_fyi' | 'embed_su';
+  readonly id: 'vidcore' | 'embed_su';
   readonly name: string;
-  readonly hostname: 'vidsrc.cc' | 'vidsrc.fyi' | 'embed.su';
+  readonly hostname: 'vidcore.org' | 'embed.su';
   readonly priority: number;
   readonly supportsSubtitleParam: boolean;
   buildMovieUrl(tmdbId: number, subtitle?: SubtitleLanguage): string;
@@ -16,39 +16,25 @@ export interface VideoProviderAdapter {
   ): string;
 }
 
-function appendSubtitleParam(baseUrl: string, subtitle: SubtitleLanguage = 'en'): string {
+function appendLanguageParam(baseUrl: string, subtitle: SubtitleLanguage = 'en'): string {
   if (subtitle === 'off') return baseUrl;
-  return `${baseUrl}?sub=${encodeURIComponent(subtitle)}`;
+  return `${baseUrl}?lang=${encodeURIComponent(subtitle)}`;
 }
 
-export const VidSrcCcAdapter: VideoProviderAdapter = {
-  id: 'vidsrc_cc',
-  name: 'VidSrc CC',
-  hostname: 'vidsrc.cc',
+export const VidCoreAdapter: VideoProviderAdapter = {
+  id: 'vidcore',
+  name: 'VidCore',
+  hostname: 'vidcore.org',
   priority: 1,
   supportsSubtitleParam: true,
   buildMovieUrl(tmdbId, subtitle = 'en') {
-    return appendSubtitleParam(`https://vidsrc.cc/v2/embed/movie/${tmdbId}`, subtitle);
+    return appendLanguageParam(`https://vidcore.org/embed/movie/${tmdbId}`, subtitle);
   },
   buildEpisodeUrl(tmdbId, season, episode, subtitle = 'en') {
-    return appendSubtitleParam(
-      `https://vidsrc.cc/v2/embed/tv/${tmdbId}/${season}/${episode}`,
+    return appendLanguageParam(
+      `https://vidcore.org/embed/tv/${tmdbId}/${season}/${episode}`,
       subtitle
     );
-  },
-};
-
-export const VidSrcFyiAdapter: VideoProviderAdapter = {
-  id: 'vidsrc_fyi',
-  name: 'VidSrc FYI',
-  hostname: 'vidsrc.fyi',
-  priority: 2,
-  supportsSubtitleParam: false,
-  buildMovieUrl(tmdbId) {
-    return `https://vidsrc.fyi/embed/movie/${tmdbId}`;
-  },
-  buildEpisodeUrl(tmdbId, season, episode) {
-    return `https://vidsrc.fyi/embed/tv/${tmdbId}/${season}/${episode}`;
   },
 };
 
@@ -56,7 +42,7 @@ export const EmbedSuAdapter: VideoProviderAdapter = {
   id: 'embed_su',
   name: 'Embed SU',
   hostname: 'embed.su',
-  priority: 3,
+  priority: 2,
   supportsSubtitleParam: false,
   buildMovieUrl(tmdbId) {
     return `https://embed.su/embed/movie/${tmdbId}`;
@@ -67,13 +53,12 @@ export const EmbedSuAdapter: VideoProviderAdapter = {
 };
 
 export const AUTHORIZED_VIDEO_ADAPTERS: readonly VideoProviderAdapter[] = [
-  VidSrcCcAdapter,
-  VidSrcFyiAdapter,
+  VidCoreAdapter,
   EmbedSuAdapter,
 ] as const;
 
 export const IFRAME_ALLOW_PERMISSIONS =
-  'autoplay; fullscreen; picture-in-picture' as const;
+  'autoplay; encrypted-media; fullscreen; picture-in-picture' as const;
 
 /**
  * Resolves a validated VideoSourceDescriptor from an isolated adapter.

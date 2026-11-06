@@ -4,18 +4,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AlertTriangle,
   ArrowLeft,
-  Captions,
-  FastForward,
-  Maximize,
-  Minimize,
-  Pause,
-  Play,
   RefreshCw,
-  Rewind,
   SkipBack,
   SkipForward,
-  Volume2,
-  VolumeX,
 } from 'lucide-react';
 import {
   getMediaTitle,
@@ -23,17 +14,10 @@ import {
   type MediaItem,
 } from '@/lib/schemas';
 import {
-  clampSeekPercentage,
-  clampVolumeLevel,
-  createPlayerCommandPayload,
   IFRAME_ALLOW_PERMISSIONS,
   resolveNextSourceState,
 } from '@/lib/video/adapter';
-import {
-  buildAuthorizedVideoSources,
-  SUBTITLE_OPTIONS,
-  type SubtitleLanguage,
-} from '@/lib/video/providers';
+import { buildAuthorizedVideoSources } from '@/lib/video/providers';
 import { Button } from '@/components/ui/button';
 
 interface VideoPlayerProps {
@@ -56,17 +40,9 @@ export default function VideoPlayer({
   fullViewport = true,
 }: VideoPlayerProps) {
   const [srcIdx, setSrcIdx] = useState(0);
-  const [subtitleLang, setSubtitleLang] = useState<SubtitleLanguage>('en');
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [showNudge, setShowNudge] = useState(false);
-
-  // Accessible playback control state (synchronizes with wrapper + postMessage commands)
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(85);
-  const [seekProgress, setSeekProgress] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -81,9 +57,8 @@ export default function VideoPlayer({
         mediaType: isTv ? 'tv' : 'movie',
         season,
         episode,
-        subtitle: subtitleLang,
       }),
-    [item.id, isTv, season, episode, subtitleLang]
+    [item.id, isTv, season, episode]
   );
 
   const activeSource = sources[srcIdx] ?? null;
@@ -120,7 +95,7 @@ export default function VideoPlayer({
     setLoaded(false);
     setLoadError(false);
     setShowNudge(false);
-  }, [srcIdx, episode, season, subtitleLang]);
+  }, [srcIdx, episode, season]);
 
   // Reset source index when episode changes
   useEffect(() => {
@@ -142,96 +117,7 @@ export default function VideoPlayer({
     setLoadError(nextState.loadError);
   }, [srcIdx, totalSources]);
 
-  const postPlayerCommand = useCallback(
-    (
-      command:
-        | 'playVideo'
-        | 'pauseVideo'
-        | 'seekTo'
-        | 'mute'
-        | 'unMute'
-        | 'setVolume',
-      value?: number | string
-    ) => {
-      try {
-        iframeRef.current?.contentWindow?.postMessage(
-          createPlayerCommandPayload(command, value),
-          '*'
-        );
-      } catch {
-        // Cross-origin frame may ignore custom postMessage
-      }
-    },
-    []
-  );
-
-  const togglePlayPause = useCallback(() => {
-    setIsPlaying((prev) => {
-      const next = !prev;
-      postPlayerCommand(next ? 'playVideo' : 'pauseVideo');
-      return next;
-    });
-  }, [postPlayerCommand]);
-
-  const handleSeek = useCallback(
-    (delta: number) => {
-      setSeekProgress((prev) => {
-        const next = clampSeekPercentage(prev, delta);
-        postPlayerCommand('seekTo', next);
-        return next;
-      });
-    },
-    [postPlayerCommand]
-  );
-
-  const toggleMute = useCallback(() => {
-    setIsMuted((prev) => {
-      const next = !prev;
-      postPlayerCommand(next ? 'mute' : 'unMute');
-      return next;
-    });
-  }, [postPlayerCommand]);
-
-  const handleVolumeChange = useCallback(
-    (nextVol: number) => {
-      const clamped = clampVolumeLevel(nextVol);
-      setVolume(clamped);
-      setIsMuted(clamped === 0);
-      postPlayerCommand('setVolume', clamped);
-    },
-    [postPlayerCommand]
-  );
-
-  const toggleFullscreen = useCallback(async () => {
-    const el = playerContainerRef.current;
-    if (!el) return;
-    try {
-      if (!document.fullscreenElement) {
-        if (el.requestFullscreen) {
-          await el.requestFullscreen();
-        }
-        setIsFullscreen(true);
-      } else {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        }
-        setIsFullscreen(false);
-      }
-    } catch {
-      setIsFullscreen((prev) => !prev);
-    }
-  }, []);
-
-  useEffect(() => {
-    const onFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    };
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    return () =>
-      document.removeEventListener('fullscreenchange', onFullscreenChange);
-  }, []);
-
-  // Keyboard shortcuts for accessible playback
+  // Keyboard shortcuts for TV episode navigation
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (
@@ -240,29 +126,20 @@ export default function VideoPlayer({
       ) {
         return;
       }
-      if (e.key === 'ArrowLeft') {
-        if (e.shiftKey && isTv) goPrevEp();
-        else handleSeek(-5);
-      } else if (e.key === 'ArrowRight') {
-        if (e.shiftKey && isTv) goNextEp();
-        else handleSeek(5);
-      } else if (e.key === 'f' || e.key === 'F') {
-        e.preventDefault();
-        void toggleFullscreen();
-      } else if (e.key === 'm' || e.key === 'M') {
-        e.preventDefault();
-        toggleMute();
+      if (e.key === 'ArrowLeft' && isTv) {
+        goPrevEp();
+      } else if (e.key === 'ArrowRight' && isTv) {
+        goNextEp();
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isTv, goPrevEp, goNextEp, handleSeek, toggleFullscreen, toggleMute]);
+  }, [isTv, goPrevEp, goNextEp]);
 
   return (
     <div
       ref={playerContainerRef}
       data-testid="video-player-container"
-      data-fullscreen={isFullscreen ? 'true' : 'false'}
       className={
         fullViewport
           ? 'fixed inset-0 z-[500] bg-black flex flex-col'
@@ -337,11 +214,21 @@ export default function VideoPlayer({
                 </button>
               );
             })}
+            <button
+              type="button"
+              onClick={tryNextSource}
+              aria-label="Switch to fallback source"
+              data-testid="control-fallback-btn"
+              className="h-8 px-2.5 rounded bg-white/10 hover:bg-white/20 text-xs text-neutral-200 flex items-center gap-1 transition-colors ml-1"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Next Source</span>
+            </button>
           </div>
         )}
       </div>
 
-      {/* Video Iframe Area */}
+      {/* Video Iframe Area (Native embedded player controls handle play/pause, seek, audio/subtitles, and fullscreen) */}
       <div className="flex-1 relative bg-black min-h-[260px]">
         {loadError && (
           <div
@@ -417,146 +304,14 @@ export default function VideoPlayer({
             className={`absolute inset-0 w-full h-full border-0 transition-opacity duration-300 ${
               loaded ? 'opacity-100' : 'opacity-90'
             }`}
+            sandbox="allow-scripts allow-same-origin"
             allowFullScreen
             allow={IFRAME_ALLOW_PERMISSIONS}
-            referrerPolicy="origin"
+            referrerPolicy="no-referrer"
             onLoad={() => setLoaded(true)}
             onError={tryNextSource}
           />
         )}
-      </div>
-
-      {/* Accessible Playback Controls Toolbar */}
-      <div
-        role="toolbar"
-        aria-label="Playback controls"
-        data-testid="playback-controls-toolbar"
-        className="flex items-center justify-between gap-3 px-3 sm:px-5 py-2.5 bg-neutral-950 border-t border-white/10 shrink-0 flex-wrap"
-      >
-        {/* Play / Pause & Seek Controls */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={togglePlayPause}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
-            data-testid="control-play-pause"
-            className="w-8 h-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-          >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSeek(-10)}
-            aria-label="Rewind 10 seconds"
-            data-testid="control-rewind"
-            className="w-8 h-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-          >
-            <Rewind className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSeek(10)}
-            aria-label="Forward 10 seconds"
-            data-testid="control-forward"
-            className="w-8 h-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-          >
-            <FastForward className="w-4 h-4" />
-          </button>
-
-          <div className="hidden md:flex items-center gap-2 ml-2">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={seekProgress}
-              onChange={(e) => handleSeek(Number(e.target.value) - seekProgress)}
-              aria-label="Seek timeline"
-              data-testid="control-seek-slider"
-              className="w-28 accent-brand cursor-pointer"
-            />
-          </div>
-        </div>
-
-        {/* Volume, Subtitles, Source Fallback Trigger, and Fullscreen Controls */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Volume */}
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={toggleMute}
-              aria-label={isMuted ? 'Unmute' : 'Mute'}
-              data-testid="control-mute-toggle"
-              className="w-8 h-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-            >
-              {isMuted ? (
-                <VolumeX className="w-4 h-4 text-brand" />
-              ) : (
-                <Volume2 className="w-4 h-4" />
-              )}
-            </button>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={isMuted ? 0 : volume}
-              onChange={(e) => handleVolumeChange(Number(e.target.value))}
-              aria-label="Volume"
-              data-testid="control-volume-slider"
-              className="w-20 accent-brand cursor-pointer hidden sm:inline-block"
-            />
-          </div>
-
-          {/* Subtitles Selector */}
-          <div className="flex items-center gap-1.5">
-            <Captions
-              className={`w-4 h-4 ${
-                subtitleLang !== 'off' ? 'text-brand' : 'text-neutral-400'
-              }`}
-            />
-            <select
-              aria-label="Subtitles"
-              data-testid="control-subtitles-select"
-              value={subtitleLang}
-              onChange={(e) => setSubtitleLang(e.target.value as SubtitleLanguage)}
-              className="bg-neutral-900 text-white text-xs border border-white/20 rounded px-2 py-1.5 focus:outline-none focus:border-brand"
-            >
-              {SUBTITLE_OPTIONS.map((opt) => (
-                <option key={opt.code} value={opt.code}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Manual Fallback / Report Unresponsive Source */}
-          <button
-            type="button"
-            onClick={tryNextSource}
-            aria-label="Switch to fallback source"
-            data-testid="control-fallback-btn"
-            className="h-8 px-2.5 rounded bg-white/10 hover:bg-white/20 text-xs text-neutral-200 flex items-center gap-1 transition-colors"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Next Source</span>
-          </button>
-
-          {/* Fullscreen Toggle */}
-          <button
-            type="button"
-            onClick={() => void toggleFullscreen()}
-            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            data-testid="control-fullscreen-btn"
-            className="w-8 h-8 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-          >
-            {isFullscreen ? (
-              <Minimize className="w-4 h-4" />
-            ) : (
-              <Maximize className="w-4 h-4" />
-            )}
-          </button>
-        </div>
       </div>
 
       {/* TV Episode Navigation Bar */}

@@ -31,9 +31,6 @@ export default function Home() {
   /* ── Home-tab rows ── */
   const [rows, setRows] = useState({});
 
-  /* ── Availability filter ── */
-  const [availableIds, setAvailableIds] = useState(null);
-
   /* ── Details / player modal ── */
   const [selected,   setSelected]   = useState(null);
   const [playing,    setPlaying]    = useState(false);
@@ -82,30 +79,6 @@ export default function Home() {
     const t = setInterval(() => setFeaturedIdx(i => (i + 1) % featuredItems.length), 7000);
     return () => clearInterval(t);
   }, [featuredItems.length]);
-
-  /* Fetch streamable IDs from VidSrc */
-  useEffect(() => {
-    // /vidsrc-api/* is proxied to vidsrc.to:
-    //   • locally  → src/setupProxy.js (CRA dev server proxy, no CORS)
-    //   • prod     → netlify.toml [[redirects]] (Netlify server-side proxy, no CORS)
-    const run = async () => {
-      try {
-        const ids = new Set();
-        const fetchPage = async (type, page) => {
-          const res = await fetch(`/vidsrc-api/${type}/latest/page-${page}.json`, { signal: AbortSignal.timeout(6000) });
-          if (!res.ok) return;
-          const data  = await res.json();
-          const items = data?.result?.items ?? data?.items ?? (Array.isArray(data) ? data : []);
-          items.forEach(i => { const id = i.tmdb_id || i.tmdb; if (id) ids.add(String(id)); });
-        };
-        const tasks = [];
-        for (let p = 1; p <= 10; p++) { tasks.push(fetchPage('movies', p)); tasks.push(fetchPage('tvshows', p)); }
-        await Promise.allSettled(tasks);
-        setAvailableIds(ids.size > 0 ? ids : new Set());
-      } catch { setAvailableIds(new Set()); }
-    };
-    run();
-  }, []);
 
   /* Fetch hero items + home rows */
   useEffect(() => {
@@ -177,10 +150,7 @@ export default function Home() {
     }, 350);
   }, []);
 
-  const filterAvailable = useCallback((items) => {
-    if (!availableIds || availableIds.size === 0) return items;
-    return items.filter(i => availableIds.has(String(i.id)));
-  }, [availableIds]);
+  const filterAvailable = useCallback((items) => items, []);
 
   const toggleList = useCallback((item) => {
     setMyList(prev => {
@@ -246,20 +216,17 @@ export default function Home() {
   }, []);
 
   /* ── Embed sources (tried in order when one returns 503 / fails) ── */
-  /* Using 2026-active domains — vidsrc.to & vidsrc.me are deprecated/dead. */
   const embedSources = useMemo(() => {
     if (!selected) return [];
     const id   = selected.id;
     const isTv = selected.media_type === 'tv';
     const s = selSeason, e = selEpisode;
     return isTv ? [
-      `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}?sub=en`,   // primary   – vidsrc.cc (active 2026)
-      `https://vidsrc.fyi/embed/tv/${id}/${s}/${e}`,            // fallback 1 – vidsrc.fyi
-      `https://embed.su/embed/tv/${id}/${s}/${e}`,              // fallback 2 – embed.su
+      `https://vidcore.org/embed/tv/${id}/${s}/${e}?lang=en`, // primary  – vidcore.org (ad-free)
+      `https://embed.su/embed/tv/${id}/${s}/${e}`,            // fallback – embed.su
     ] : [
-      `https://vidsrc.cc/v2/embed/movie/${id}?sub=en`,          // primary   – vidsrc.cc (active 2026)
-      `https://vidsrc.fyi/embed/movie/${id}`,                   // fallback 1 – vidsrc.fyi
-      `https://embed.su/embed/movie/${id}`,                     // fallback 2 – embed.su
+      `https://vidcore.org/embed/movie/${id}?lang=en`,        // primary  – vidcore.org (ad-free)
+      `https://embed.su/embed/movie/${id}`,                   // fallback – embed.su
     ];
   }, [selected, selSeason, selEpisode]);
 

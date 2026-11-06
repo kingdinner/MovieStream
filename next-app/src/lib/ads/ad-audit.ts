@@ -59,31 +59,20 @@ export const ADVERTISEMENT_AUDIT_REGISTRY: readonly AuditedScriptOrComponent[] =
       'First-party full-screen pre-play gate ("YOUR VIDEO WILL START AFTER THIS AD"). Removed in Phase 4 and excluded from Next.js application.',
   },
   {
-    id: 'pr-vidsrc-cc',
-    name: 'VidSrc CC Embed Player & Stream Token Resolver',
-    locationOrOrigin: 'https://vidsrc.cc/v2/embed/*',
+    id: 'pr-vidcore',
+    name: 'VidCore Ad-Free Embed Player & Stream Resolver',
+    locationOrOrigin: 'https://vidcore.org/embed/*',
     classification: 'PROVIDER_REQUIRED',
     action: 'PRESERVED_IN_IFRAME',
     dependencies: [
       'Cross-origin iframe context',
       'HLS/DASH media segments',
-      'Subtitle track loader (?sub=en)',
-      'Provider session verification',
+      'Subtitle/audio language loader (?lang=en)',
+      'PostMessage playback events (vidcore:play, vidcore:pause, vidcore:ended)',
     ],
     playbackImpactIfRemoved: 'CRITICAL_BREAKS_PLAYBACK',
     notes:
-      'Primary authorized video provider. Loaded inside an isolated cross-origin iframe without restrictive sandbox flags or global request blocking.',
-  },
-  {
-    id: 'pr-vidsrc-fyi',
-    name: 'VidSrc FYI Embed Player & Stream Resolver',
-    locationOrOrigin: 'https://vidsrc.fyi/embed/*',
-    classification: 'PROVIDER_REQUIRED',
-    action: 'PRESERVED_IN_IFRAME',
-    dependencies: ['Cross-origin iframe context', 'HLS media stream'],
-    playbackImpactIfRemoved: 'CRITICAL_BREAKS_PLAYBACK',
-    notes:
-      'Authorized Fallback 1 video provider. Preserved inside isolated cross-origin iframe.',
+      'Primary authorized ad-free video provider (replaced VidSrc servers). Loaded inside an isolated cross-origin iframe.',
   },
   {
     id: 'pr-embed-su',
@@ -94,18 +83,18 @@ export const ADVERTISEMENT_AUDIT_REGISTRY: readonly AuditedScriptOrComponent[] =
     dependencies: ['Cross-origin iframe context', 'HLS media stream'],
     playbackImpactIfRemoved: 'CRITICAL_BREAKS_PLAYBACK',
     notes:
-      'Authorized Fallback 2 video provider. Preserved inside isolated cross-origin iframe.',
+      'Authorized Fallback video provider. Preserved inside isolated cross-origin iframe.',
   },
   {
     id: 'tp-provider-monetization',
-    name: 'Provider-Hosted Third-Party Ad Networks inside Embed Iframes',
-    locationOrOrigin: 'Cross-origin sub-resources within vidsrc.cc, vidsrc.fyi, embed.su',
+    name: 'Provider-Hosted Third-Party Ad Networks inside Fallback Embed Iframes',
+    locationOrOrigin: 'Cross-origin sub-resources within embed.su',
     classification: 'THIRD_PARTY',
     action: 'PRESERVED_IN_IFRAME',
     dependencies: ['Provider iframe execution context', 'Provider monetization verification'],
     playbackImpactIfRemoved: 'VIOLATES_PROVIDER_TERMS',
     notes:
-      'Third-party monetization scripts loaded inside authorized provider iframes. Per engineering policy, no ad-blocking, DRM bypass, or global request interception is performed.',
+      'Third-party monetization scripts loaded inside fallback provider iframes. Primary provider vidcore.org is natively ad-free.',
   },
   {
     id: 'unk-provider-dynamic-bundles',
@@ -140,8 +129,7 @@ export function classifyResource(identifier: string): AdClassification {
   }
 
   if (
-    normalized.includes('vidsrc.cc/v2/embed') ||
-    normalized.includes('vidsrc.fyi/embed') ||
+    normalized.includes('vidcore.org/embed') ||
     normalized.includes('embed.su/embed')
   ) {
     return 'PROVIDER_REQUIRED';
@@ -186,7 +174,7 @@ export function verifyAdSeparationPolicy(): {
       firstPartyItems.length > 0 &&
       firstPartyItems.every((i) => i.action === 'REMOVED'),
     providerRequiredPreserved:
-      providerItems.length === 3 &&
+      providerItems.length === 2 &&
       providerItems.every((i) => i.action === 'PRESERVED_IN_IFRAME'),
     thirdPartyUnblocked:
       thirdPartyItems.length > 0 &&

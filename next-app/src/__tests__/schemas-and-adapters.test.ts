@@ -54,12 +54,7 @@ describe('Zod Schemas & External URL Validation', () => {
   it('accepts only authorized HTTPS video provider hostnames', () => {
     expect(
       AuthorizedProviderUrlSchema.safeParse(
-        'https://vidsrc.cc/v2/embed/movie/693134?sub=en'
-      ).success
-    ).toBe(true);
-    expect(
-      AuthorizedProviderUrlSchema.safeParse(
-        'https://vidsrc.fyi/embed/movie/693134'
+        'https://vidcore.org/embed/movie/693134?lang=en'
       ).success
     ).toBe(true);
     expect(
@@ -68,10 +63,15 @@ describe('Zod Schemas & External URL Validation', () => {
       ).success
     ).toBe(true);
 
-    // Reject HTTP or unauthorized domains
+    // Reject HTTP or removed/unauthorized domains (including vidsrc)
     expect(
       AuthorizedProviderUrlSchema.safeParse(
-        'http://vidsrc.cc/v2/embed/movie/693134'
+        'http://vidcore.org/embed/movie/693134'
+      ).success
+    ).toBe(false);
+    expect(
+      AuthorizedProviderUrlSchema.safeParse(
+        'https://vidsrc.cc/v2/embed/movie/693134'
       ).success
     ).toBe(false);
     expect(
@@ -88,39 +88,33 @@ describe('Video Provider Adapters & Playback Helpers', () => {
       tmdbId: 693134,
       mediaType: 'movie',
     });
-    expect(sources).toHaveLength(3);
+    expect(sources).toHaveLength(2);
     expect(sources[0]?.url).toBe(
-      'https://vidsrc.cc/v2/embed/movie/693134?sub=en'
+      'https://vidcore.org/embed/movie/693134?lang=en'
     );
-    expect(sources[1]?.url).toBe('https://vidsrc.fyi/embed/movie/693134');
-    expect(sources[2]?.url).toBe('https://embed.su/embed/movie/693134');
+    expect(sources[1]?.url).toBe('https://embed.su/embed/movie/693134');
   });
 
   it('generates TV episode embed sources with season, episode, and subtitle language', () => {
     const urls = getEmbedSourceUrls(1396, 'tv', 2, 5, 'es');
     expect(urls).toEqual([
-      'https://vidsrc.cc/v2/embed/tv/1396/2/5?sub=es',
-      'https://vidsrc.fyi/embed/tv/1396/2/5',
+      'https://vidcore.org/embed/tv/1396/2/5?lang=es',
       'https://embed.su/embed/tv/1396/2/5',
     ]);
   });
 
   it('omits subtitle query parameter when subtitles are set to off', () => {
     const urls = getEmbedSourceUrls(693134, 'movie', 1, 1, 'off');
-    expect(urls[0]).toBe('https://vidsrc.cc/v2/embed/movie/693134');
+    expect(urls[0]).toBe('https://vidcore.org/embed/movie/693134');
   });
 
   it('transitions deterministically through fallback sources and sets loadError when exhausted', () => {
-    expect(resolveNextSourceState(0, 3)).toEqual({
+    expect(resolveNextSourceState(0, 2)).toEqual({
       nextIndex: 1,
       loadError: false,
     });
-    expect(resolveNextSourceState(1, 3)).toEqual({
-      nextIndex: 2,
-      loadError: false,
-    });
-    expect(resolveNextSourceState(2, 3)).toEqual({
-      nextIndex: 2,
+    expect(resolveNextSourceState(1, 2)).toEqual({
+      nextIndex: 1,
       loadError: true,
     });
   });
@@ -156,7 +150,7 @@ describe('Advertisement Audit & Separation Policy', () => {
     expect(classifyResource('src/components/ads/InterstitialAd.jsx')).toBe(
       'FIRST_PARTY'
     );
-    expect(classifyResource('https://vidsrc.cc/v2/embed/movie/693134')).toBe(
+    expect(classifyResource('https://vidcore.org/embed/movie/693134')).toBe(
       'PROVIDER_REQUIRED'
     );
     expect(
@@ -173,6 +167,6 @@ describe('Advertisement Audit & Separation Policy', () => {
     expect(policy.providerRequiredPreserved).toBe(true);
     expect(policy.thirdPartyUnblocked).toBe(true);
     expect(policy.unknownDocumented).toBe(true);
-    expect(ADVERTISEMENT_AUDIT_REGISTRY.length).toBeGreaterThanOrEqual(8);
+    expect(ADVERTISEMENT_AUDIT_REGISTRY.length).toBeGreaterThanOrEqual(7);
   });
 });

@@ -68,18 +68,11 @@ test.describe('MovieStream (KVFilmZone) Next.js Modernization Regression Suite',
     page,
   }) => {
     // Intercept external provider iframe requests so tests do not depend on third-party uptime
-    await page.route('https://vidsrc.cc/**', (route) =>
+    await page.route('https://vidcore.org/**', (route) =>
       route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<html><body style="background:#000;color:#fff">Authorized VidSrc CC Player</body></html>',
-      })
-    );
-    await page.route('https://vidsrc.fyi/**', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'text/html',
-        body: '<html><body style="background:#000;color:#fff">Authorized VidSrc FYI Player</body></html>',
+        body: '<html><body style="background:#000;color:#fff">Authorized VidCore Player</body></html>',
       })
     );
     await page.route('https://embed.su/**', (route) =>
@@ -103,53 +96,25 @@ test.describe('MovieStream (KVFilmZone) Next.js Modernization Regression Suite',
     const iframe = page.getByTestId('player-iframe');
     await expect(iframe).toHaveAttribute(
       'src',
-      'https://vidsrc.cc/v2/embed/tv/1396/1/1?sub=en'
+      'https://vidcore.org/embed/tv/1396/1/1?lang=en'
     );
 
-    // Verify Provider Preservation: iframe has no restrictive sandbox attribute blocking provider scripts
+    // Verify popup-blocking sandbox attribute (blocks new tabs / popunders while allowing player scripts)
     const sandboxAttr = await iframe.getAttribute('sandbox');
-    expect(sandboxAttr).toBeNull();
+    expect(sandboxAttr).toBe('allow-scripts allow-same-origin');
 
-    // Test Subtitles control (switch from en -> es -> off)
-    const subSelect = page.getByTestId('control-subtitles-select');
-    await subSelect.selectOption('es');
-    await expect(iframe).toHaveAttribute(
-      'src',
-      'https://vidsrc.cc/v2/embed/tv/1396/1/1?sub=es'
-    );
-
-    // Test Playback Controls (Play/Pause, Seek, Mute, Fullscreen)
-    const playPause = page.getByTestId('control-play-pause');
-    await expect(playPause).toHaveAttribute('aria-label', 'Pause');
-    await playPause.click();
-    await expect(playPause).toHaveAttribute('aria-label', 'Play');
-
-    const muteToggle = page.getByTestId('control-mute-toggle');
-    await muteToggle.click();
-    await expect(muteToggle).toHaveAttribute('aria-label', 'Unmute');
-
-    const fullscreenBtn = page.getByTestId('control-fullscreen-btn');
-    await fullscreenBtn.click();
-    await expect(page.getByTestId('video-player-container')).toHaveAttribute(
-      'data-fullscreen',
-      'true'
-    );
+    // Verify redundant external playback toolbar is removed so native player controls work unobstructed
+    await expect(page.getByTestId('playback-controls-toolbar')).toHaveCount(0);
 
     // Test Source Selector & Multi-Source Fallback (visible on both Desktop and Mobile!)
     await expect(page.getByTestId('player-source-selector')).toBeVisible();
     await page.getByTestId('player-source-btn-2').click();
     await expect(iframe).toHaveAttribute(
       'src',
-      'https://vidsrc.fyi/embed/tv/1396/1/1'
-    );
-
-    await page.getByTestId('player-source-btn-3').click();
-    await expect(iframe).toHaveAttribute(
-      'src',
       'https://embed.su/embed/tv/1396/1/1'
     );
 
-    // Trigger fallback past the 3rd source to verify error handling overlay
+    // Trigger fallback past the 2nd source to verify error handling overlay
     await page.getByTestId('control-fallback-btn').click();
     await expect(page.getByTestId('player-error-overlay')).toBeVisible();
     await page.getByTestId('player-retry-sources-btn').click();
