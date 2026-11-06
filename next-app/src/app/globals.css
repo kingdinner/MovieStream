@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-bebas: 'Bebas Neue', sans-serif;
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+  --card-w: 155px;
+  --card-h: 232px;
+  --card-ls-w: 268px;
+  --card-ls-h: 151px;
+  --header-h: 66px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: var(--font-dm-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide scrollbars on horizontal carousels while preserving scrollability */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Crisp focus ring for keyboard & Smart TV remote navigation */
+:focus-visible {
+  outline: 2px solid #e50914;
+  outline-offset: 2px;
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --card-w: 220px;
+    --card-h: 330px;
+    --card-ls-w: 380px;
+    --card-ls-h: 214px;
+    --header-h: 92px;
+  }
+  :focus-visible {
+    outline: 4px solid #e50914;
+    outline-offset: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --card-w: 118px;
+    --card-h: 177px;
+    --card-ls-w: 196px;
+    --card-ls-h: 110px;
+    --header-h: 56px;
+  }
+}
