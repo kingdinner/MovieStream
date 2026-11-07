@@ -102,6 +102,21 @@ export default function VideoPlayer({
     setSrcIdx(0);
   }, [episode, season]);
 
+  // Keep focus on the player window if the cross-origin iframe attempts to blur/open a popup
+  useEffect(() => {
+    const onWindowBlur = () => {
+      setTimeout(() => {
+        try {
+          window.focus();
+        } catch {
+          // Ignore focus restrictions
+        }
+      }, 0);
+    };
+    window.addEventListener('blur', onWindowBlur);
+    return () => window.removeEventListener('blur', onWindowBlur);
+  }, []);
+
   // Show helpful fallback nudge after 6s if user wants to switch source
   useEffect(() => {
     if (loadError) return;

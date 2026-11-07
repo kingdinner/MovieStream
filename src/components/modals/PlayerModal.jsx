@@ -61,6 +61,17 @@ export default function PlayerModal({
     setSrcIdx(0);
   }, [selEpisode]);
 
+  /* Keep focus on current window if embedded player triggers a blur/popup */
+  useEffect(() => {
+    const onWindowBlur = () => {
+      setTimeout(() => {
+        try { window.focus(); } catch {}
+      }, 0);
+    };
+    window.addEventListener('blur', onWindowBlur);
+    return () => window.removeEventListener('blur', onWindowBlur);
+  }, []);
+
   /* Keyboard: left/right arrow = prev/next episode */
   useEffect(() => {
     const onKey = (e) => {

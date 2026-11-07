@@ -11,14 +11,11 @@
     "web-vitals": "^5.1.0"
   },
   "scripts": {
-    "dev": "npm run dev --prefix next-app",
-    "start": "npm run dev --prefix next-app",
-    "build": "npm run build --prefix next-app",
-    "test": "npm test --prefix next-app",
-    "legacy:start": "react-scripts start",
-    "legacy:build": "react-scripts build",
-    "legacy:test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "npm run dev --prefix next-app"
   },
   "eslintConfig": {
     "extends": [
