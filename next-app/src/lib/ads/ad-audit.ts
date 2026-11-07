@@ -59,20 +59,19 @@ export const ADVERTISEMENT_AUDIT_REGISTRY: readonly AuditedScriptOrComponent[] =
       'First-party full-screen pre-play gate ("YOUR VIDEO WILL START AFTER THIS AD"). Removed in Phase 4 and excluded from Next.js application.',
   },
   {
-    id: 'pr-vidcore',
-    name: 'VidCore Ad-Free Embed Player & Stream Resolver',
-    locationOrOrigin: 'https://vidcore.org/embed/*',
+    id: 'pr-vidmario',
+    name: 'VidMario Direct Embed Player & Stream Resolver',
+    locationOrOrigin: 'https://player.vidmario.net/embed/*',
     classification: 'PROVIDER_REQUIRED',
     action: 'PRESERVED_IN_IFRAME',
     dependencies: [
-      'Cross-origin iframe context',
+      'Cross-origin iframe context (un-sandboxed per provider requirement)',
       'HLS/DASH media segments',
-      'Subtitle/audio language loader (?lang=en)',
-      'PostMessage playback events (vidcore:play, vidcore:pause, vidcore:ended)',
+      'Built-in multi-server switcher, Skip Intro, and subtitle styling',
     ],
     playbackImpactIfRemoved: 'CRITICAL_BREAKS_PLAYBACK',
     notes:
-      'Primary authorized ad-free video provider (replaced VidSrc servers). Loaded inside an isolated cross-origin iframe.',
+      'Primary authorized video provider (direct upstream player wrapped by vidcore.org, without vidcore.org wrapper popunder scripts). Loaded inside an isolated cross-origin iframe.',
   },
   {
     id: 'pr-embed-su',
@@ -87,14 +86,14 @@ export const ADVERTISEMENT_AUDIT_REGISTRY: readonly AuditedScriptOrComponent[] =
   },
   {
     id: 'tp-provider-monetization',
-    name: 'Provider-Hosted Third-Party Ad Networks inside Fallback Embed Iframes',
-    locationOrOrigin: 'Cross-origin sub-resources within embed.su',
+    name: 'Provider-Hosted Third-Party Ad Networks inside Embed Iframes',
+    locationOrOrigin: 'Cross-origin sub-resources within player.vidmario.net, embed.su',
     classification: 'THIRD_PARTY',
     action: 'PRESERVED_IN_IFRAME',
     dependencies: ['Provider iframe execution context', 'Provider monetization verification'],
     playbackImpactIfRemoved: 'VIOLATES_PROVIDER_TERMS',
     notes:
-      'Third-party monetization scripts loaded inside fallback provider iframes. Primary provider vidcore.org is natively ad-free.',
+      'Third-party monetization scripts loaded inside authorized provider iframes. Per engineering policy and provider anti-sandbox checks, no iframe sandbox attribute or ad-blocking is applied.',
   },
   {
     id: 'unk-provider-dynamic-bundles',
@@ -129,7 +128,7 @@ export function classifyResource(identifier: string): AdClassification {
   }
 
   if (
-    normalized.includes('vidcore.org/embed') ||
+    normalized.includes('player.vidmario.net/embed') ||
     normalized.includes('embed.su/embed')
   ) {
     return 'PROVIDER_REQUIRED';

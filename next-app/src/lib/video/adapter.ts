@@ -2,9 +2,9 @@ import { AuthorizedProviderUrlSchema } from '@/lib/schemas';
 import { type SubtitleLanguage, type VideoSourceDescriptor } from './providers';
 
 export interface VideoProviderAdapter {
-  readonly id: 'vidcore' | 'embed_su';
+  readonly id: 'vidmario' | 'embed_su';
   readonly name: string;
-  readonly hostname: 'vidcore.org' | 'embed.su';
+  readonly hostname: 'player.vidmario.net' | 'embed.su';
   readonly priority: number;
   readonly supportsSubtitleParam: boolean;
   buildMovieUrl(tmdbId: number, subtitle?: SubtitleLanguage): string;
@@ -16,25 +16,17 @@ export interface VideoProviderAdapter {
   ): string;
 }
 
-function appendLanguageParam(baseUrl: string, subtitle: SubtitleLanguage = 'en'): string {
-  if (subtitle === 'off') return baseUrl;
-  return `${baseUrl}?lang=${encodeURIComponent(subtitle)}`;
-}
-
-export const VidCoreAdapter: VideoProviderAdapter = {
-  id: 'vidcore',
-  name: 'VidCore',
-  hostname: 'vidcore.org',
+export const VidMarioAdapter: VideoProviderAdapter = {
+  id: 'vidmario',
+  name: 'VidMario',
+  hostname: 'player.vidmario.net',
   priority: 1,
-  supportsSubtitleParam: true,
-  buildMovieUrl(tmdbId, subtitle = 'en') {
-    return appendLanguageParam(`https://vidcore.org/embed/movie/${tmdbId}`, subtitle);
+  supportsSubtitleParam: false,
+  buildMovieUrl(tmdbId) {
+    return `https://player.vidmario.net/embed/movie/${tmdbId}?primarycolor=e50914`;
   },
-  buildEpisodeUrl(tmdbId, season, episode, subtitle = 'en') {
-    return appendLanguageParam(
-      `https://vidcore.org/embed/tv/${tmdbId}/${season}/${episode}`,
-      subtitle
-    );
+  buildEpisodeUrl(tmdbId, season, episode) {
+    return `https://player.vidmario.net/embed/tv/${tmdbId}/${season}/${episode}?primarycolor=e50914`;
   },
 };
 
@@ -53,7 +45,7 @@ export const EmbedSuAdapter: VideoProviderAdapter = {
 };
 
 export const AUTHORIZED_VIDEO_ADAPTERS: readonly VideoProviderAdapter[] = [
-  VidCoreAdapter,
+  VidMarioAdapter,
   EmbedSuAdapter,
 ] as const;
 

@@ -304,10 +304,9 @@ export default function VideoPlayer({
             className={`absolute inset-0 w-full h-full border-0 transition-opacity duration-300 ${
               loaded ? 'opacity-100' : 'opacity-90'
             }`}
-            sandbox="allow-scripts allow-same-origin"
             allowFullScreen
             allow={IFRAME_ALLOW_PERMISSIONS}
-            referrerPolicy="no-referrer"
+            referrerPolicy="origin"
             onLoad={() => setLoaded(true)}
             onError={tryNextSource}
           />

@@ -29,7 +29,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), fullscreen=(self "https://vidcore.org" "https://embed.su")',
+            value: 'camera=(), microphone=(), geolocation=(), fullscreen=(self "https://player.vidmario.net" "https://embed.su")',
           },
         ],
       },

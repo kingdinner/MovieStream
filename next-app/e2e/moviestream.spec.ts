@@ -68,11 +68,11 @@ test.describe('MovieStream (KVFilmZone) Next.js Modernization Regression Suite',
     page,
   }) => {
     // Intercept external provider iframe requests so tests do not depend on third-party uptime
-    await page.route('https://vidcore.org/**', (route) =>
+    await page.route('https://player.vidmario.net/**', (route) =>
       route.fulfill({
         status: 200,
         contentType: 'text/html',
-        body: '<html><body style="background:#000;color:#fff">Authorized VidCore Player</body></html>',
+        body: '<html><body style="background:#000;color:#fff">Authorized VidMario Player</body></html>',
       })
     );
     await page.route('https://embed.su/**', (route) =>
@@ -96,12 +96,12 @@ test.describe('MovieStream (KVFilmZone) Next.js Modernization Regression Suite',
     const iframe = page.getByTestId('player-iframe');
     await expect(iframe).toHaveAttribute(
       'src',
-      'https://vidcore.org/embed/tv/1396/1/1?lang=en'
+      'https://player.vidmario.net/embed/tv/1396/1/1?primarycolor=e50914'
     );
 
-    // Verify popup-blocking sandbox attribute (blocks new tabs / popunders while allowing player scripts)
+    // Verify no sandbox attribute is set (so player.vidmario.net never triggers "This site broke the player")
     const sandboxAttr = await iframe.getAttribute('sandbox');
-    expect(sandboxAttr).toBe('allow-scripts allow-same-origin');
+    expect(sandboxAttr).toBeNull();
 
     // Verify redundant external playback toolbar is removed so native player controls work unobstructed
     await expect(page.getByTestId('playback-controls-toolbar')).toHaveCount(0);
