@@ -13,7 +13,7 @@ describe('VideoPlayer Component — Direct VidMario Player, Source Fallback & Ep
 
     expect(screen.getByTestId('player-title')).toHaveTextContent('Dune: Part Two');
     const iframe = screen.getByTestId('player-iframe') as HTMLIFrameElement;
-    expect(iframe.src).toBe('https://player.vidmario.net/embed/movie/693134?primarycolor=e50914');
+    expect(iframe.src).toBe('https://player.vidmario.net/embed/movie/693134?primarycolor=e50914&autoplay=true&player=mc-slate');
     expect(iframe.getAttribute('sandbox')).toBeNull();
     expect(iframe.getAttribute('allow')).toContain('fullscreen');
     expect(screen.queryByTestId('playback-controls-toolbar')).not.toBeInTheDocument();

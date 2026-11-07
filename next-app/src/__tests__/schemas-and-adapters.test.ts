@@ -90,7 +90,7 @@ describe('Video Provider Adapters & Playback Helpers', () => {
     });
     expect(sources).toHaveLength(2);
     expect(sources[0]?.url).toBe(
-      'https://player.vidmario.net/embed/movie/693134?primarycolor=e50914'
+      'https://player.vidmario.net/embed/movie/693134?primarycolor=e50914&autoplay=true&player=mc-slate'
     );
     expect(sources[1]?.url).toBe('https://embed.su/embed/movie/693134');
   });
@@ -98,14 +98,14 @@ describe('Video Provider Adapters & Playback Helpers', () => {
   it('generates TV episode embed sources with season and episode', () => {
     const urls = getEmbedSourceUrls(1396, 'tv', 2, 5, 'es');
     expect(urls).toEqual([
-      'https://player.vidmario.net/embed/tv/1396/2/5?primarycolor=e50914',
+      'https://player.vidmario.net/embed/tv/1396/2/5?primarycolor=e50914&autoplay=true&player=mc-slate',
       'https://embed.su/embed/tv/1396/2/5',
     ]);
   });
 
   it('returns direct VidMario movie embed URL with brand primarycolor', () => {
     const urls = getEmbedSourceUrls(693134, 'movie', 1, 1, 'off');
-    expect(urls[0]).toBe('https://player.vidmario.net/embed/movie/693134?primarycolor=e50914');
+    expect(urls[0]).toBe('https://player.vidmario.net/embed/movie/693134?primarycolor=e50914&autoplay=true&player=mc-slate');
   });
 
   it('transitions deterministically through fallback sources and sets loadError when exhausted', () => {

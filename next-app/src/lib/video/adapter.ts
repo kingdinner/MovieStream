@@ -23,10 +23,10 @@ export const VidMarioAdapter: VideoProviderAdapter = {
   priority: 1,
   supportsSubtitleParam: false,
   buildMovieUrl(tmdbId) {
-    return `https://player.vidmario.net/embed/movie/${tmdbId}?primarycolor=e50914`;
+    return `https://player.vidmario.net/embed/movie/${tmdbId}?primarycolor=e50914&autoplay=true&player=mc-slate`;
   },
   buildEpisodeUrl(tmdbId, season, episode) {
-    return `https://player.vidmario.net/embed/tv/${tmdbId}/${season}/${episode}?primarycolor=e50914`;
+    return `https://player.vidmario.net/embed/tv/${tmdbId}/${season}/${episode}?primarycolor=e50914&autoplay=true&player=mc-slate`;
   },
 };
 

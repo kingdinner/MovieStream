@@ -61,11 +61,14 @@ export default function PlayerModal({
     setSrcIdx(0);
   }, [selEpisode]);
 
-  /* Keep focus on current window if embedded player triggers a blur/popup */
+  /* Keep focus on current window and player iframe if a popup tries to steal focus */
   useEffect(() => {
     const onWindowBlur = () => {
       setTimeout(() => {
-        try { window.focus(); } catch {}
+        try {
+          window.focus();
+          iframeRef.current?.focus();
+        } catch {}
       }, 0);
     };
     window.addEventListener('blur', onWindowBlur);
@@ -144,6 +147,22 @@ export default function PlayerModal({
           )}
         </div>
 
+        {/* Unmute keyboard shortcut hint */}
+        <span
+          style={{
+            color: '#ccc',
+            fontSize: 12,
+            fontFamily: "'DM Sans',sans-serif",
+            background: 'rgba(255,255,255,.08)',
+            border: '1px solid rgba(255,255,255,.15)',
+            borderRadius: 6,
+            padding: '5px 10px',
+            flexShrink: 0,
+          }}
+        >
+          Press <strong style={{ color: '#fff' }}>M</strong> to unmute
+        </span>
+
         {/* Source selector */}
         {total > 1 && (
           <div className="player-src-btns" style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
@@ -219,7 +238,10 @@ export default function PlayerModal({
           }}
           allowFullScreen
           allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-          onLoad={() => setLoaded(true)}
+          onLoad={() => {
+            setLoaded(true);
+            try { iframeRef.current?.focus(); } catch {}
+          }}
           onError={tryNext}
         />
       </div>

@@ -102,12 +102,13 @@ export default function VideoPlayer({
     setSrcIdx(0);
   }, [episode, season]);
 
-  // Keep focus on the player window if the cross-origin iframe attempts to blur/open a popup
+  // Keep focus on the player window and iframe if a popup tries to steal focus
   useEffect(() => {
     const onWindowBlur = () => {
       setTimeout(() => {
         try {
           window.focus();
+          iframeRef.current?.focus();
         } catch {
           // Ignore focus restrictions
         }
@@ -193,6 +194,10 @@ export default function VideoPlayer({
             )}
           </div>
         </div>
+
+        <span className="text-neutral-300 text-xs bg-white/10 border border-white/15 rounded px-2.5 py-1 shrink-0">
+          Press <strong className="text-white">M</strong> to unmute
+        </span>
 
         {/* Source Switcher — Accessible on ALL viewports including mobile */}
         {totalSources > 1 && (
@@ -322,7 +327,14 @@ export default function VideoPlayer({
             allowFullScreen
             allow={IFRAME_ALLOW_PERMISSIONS}
             referrerPolicy="origin"
-            onLoad={() => setLoaded(true)}
+            onLoad={() => {
+              setLoaded(true);
+              try {
+                iframeRef.current?.focus();
+              } catch {
+                // Ignore focus restrictions
+              }
+            }}
             onError={tryNextSource}
           />
         )}
