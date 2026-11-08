@@ -222,13 +222,13 @@ export default function Home() {
     const isTv = selected.media_type === 'tv';
     const s = selSeason, e = selEpisode;
     return isTv ? [
-      `https://player.vidmario.net/embed/tv/${id}/${s}/${e}?primarycolor=e50914&autoplay=true&player=mc-slate`, // Source 1 – VidMario (autoplay + click-anywhere/slider unmute)
-      `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&autoplay=true&player=jw`,                     // Source 2 – VidLink
-      `https://embed.su/embed/tv/${id}/${s}/${e}`,                                                               // Source 3 – Embed.su
+      `https://anyembed.xyz/embed/tv/${id}/${s}/${e}?theme=red&logo=false`,                                     // Source 1 – AnyEmbed (sandboxed: blocks new-tab popups on Smart TV, unmuted)
+      `https://player.vidmario.net/embed/tv/${id}/${s}/${e}?primarycolor=e50914&autoplay=true&player=mc-slate`, // Source 2 – VidMario
+      `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&autoplay=true&player=jw`,                     // Source 3 – VidLink
     ] : [
-      `https://player.vidmario.net/embed/movie/${id}?primarycolor=e50914&&player=mc-slate`,        // Source 1 – VidMario (autoplay + click-anywhere/slider unmute)
-      `https://vidlink.pro/movie/${id}?primaryColor=e50914&autoplay=true&player=jw`,                            // Source 2 – VidLink
-      `https://embed.su/embed/movie/${id}`,                                                                      // Source 3 – Embed.su
+      `https://anyembed.xyz/embed/movie/${id}?theme=red&logo=false`,                                            // Source 1 – AnyEmbed (sandboxed: blocks new-tab popups on Smart TV, unmuted)
+      `https://player.vidmario.net/embed/movie/${id}?primarycolor=e50914&autoplay=true&player=mc-slate`,        // Source 2 – VidMario
+      `https://vidlink.pro/movie/${id}?primaryColor=e50914&autoplay=true&player=jw`,                            // Source 3 – VidLink
     ];
   }, [selected, selSeason, selEpisode]);
 

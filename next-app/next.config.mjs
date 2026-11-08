@@ -35,7 +35,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), fullscreen=(self "https://player.vidmario.net" "https://embed.su")',
+            value: 'camera=(), microphone=(), geolocation=(), fullscreen=(self "https://anyembed.xyz" "https://player.vidmario.net" "https://embed.su")',
           },
         ],
       },

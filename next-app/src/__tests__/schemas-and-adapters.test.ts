@@ -54,6 +54,11 @@ describe('Zod Schemas & External URL Validation', () => {
   it('accepts only authorized HTTPS video provider hostnames', () => {
     expect(
       AuthorizedProviderUrlSchema.safeParse(
+        'https://anyembed.xyz/embed/movie/693134?theme=red&logo=false'
+      ).success
+    ).toBe(true);
+    expect(
+      AuthorizedProviderUrlSchema.safeParse(
         'https://player.vidmario.net/embed/movie/693134?primarycolor=e50914'
       ).success
     ).toBe(true);
@@ -66,7 +71,7 @@ describe('Zod Schemas & External URL Validation', () => {
     // Reject HTTP or removed/unauthorized domains (including vidsrc and vidcore wrapper)
     expect(
       AuthorizedProviderUrlSchema.safeParse(
-        'http://player.vidmario.net/embed/movie/693134'
+        'http://anyembed.xyz/embed/movie/693134'
       ).success
     ).toBe(false);
     expect(
@@ -90,22 +95,24 @@ describe('Video Provider Adapters & Playback Helpers', () => {
     });
     expect(sources).toHaveLength(2);
     expect(sources[0]?.url).toBe(
+      'https://anyembed.xyz/embed/movie/693134?theme=red&logo=false'
+    );
+    expect(sources[1]?.url).toBe(
       'https://player.vidmario.net/embed/movie/693134?primarycolor=e50914&autoplay=true&player=mc-slate'
     );
-    expect(sources[1]?.url).toBe('https://embed.su/embed/movie/693134');
   });
 
   it('generates TV episode embed sources with season and episode', () => {
     const urls = getEmbedSourceUrls(1396, 'tv', 2, 5, 'es');
     expect(urls).toEqual([
+      'https://anyembed.xyz/embed/tv/1396/2/5?theme=red&logo=false',
       'https://player.vidmario.net/embed/tv/1396/2/5?primarycolor=e50914&autoplay=true&player=mc-slate',
-      'https://embed.su/embed/tv/1396/2/5',
     ]);
   });
 
-  it('returns direct VidMario movie embed URL with brand primarycolor', () => {
+  it('returns sandbox-compatible AnyEmbed movie embed URL as primary source', () => {
     const urls = getEmbedSourceUrls(693134, 'movie', 1, 1, 'off');
-    expect(urls[0]).toBe('https://player.vidmario.net/embed/movie/693134?primarycolor=e50914&autoplay=true&player=mc-slate');
+    expect(urls[0]).toBe('https://anyembed.xyz/embed/movie/693134?theme=red&logo=false');
   });
 
   it('transitions deterministically through fallback sources and sets loadError when exhausted', () => {

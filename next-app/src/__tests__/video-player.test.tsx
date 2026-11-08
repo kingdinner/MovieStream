@@ -8,13 +8,15 @@ describe('VideoPlayer Component — Direct VidMario Player, Source Fallback & Ep
   const movie = FALLBACK_MOVIES[0]!;
   const tvShow = FALLBACK_TV_SHOWS[0]!;
 
-  it('renders movie player with direct VidMario source and no sandbox restriction', () => {
+  it('renders movie player with primary sandboxed AnyEmbed source that blocks new-tab popups', () => {
     render(<VideoPlayer item={movie} />);
 
     expect(screen.getByTestId('player-title')).toHaveTextContent('Dune: Part Two');
     const iframe = screen.getByTestId('player-iframe') as HTMLIFrameElement;
-    expect(iframe.src).toBe('https://player.vidmario.net/embed/movie/693134?primarycolor=e50914&autoplay=true&player=mc-slate');
-    expect(iframe.getAttribute('sandbox')).toBeNull();
+    expect(iframe.src).toBe('https://anyembed.xyz/embed/movie/693134?theme=red&logo=false');
+    expect(iframe.getAttribute('sandbox')).toBe(
+      'allow-scripts allow-same-origin allow-forms allow-presentation'
+    );
     expect(iframe.getAttribute('allow')).toContain('fullscreen');
     expect(screen.queryByTestId('playback-controls-toolbar')).not.toBeInTheDocument();
   });
@@ -22,15 +24,15 @@ describe('VideoPlayer Component — Direct VidMario Player, Source Fallback & Ep
   it('cycles through fallback sources on failure and displays retryable error state when all fail', () => {
     render(<VideoPlayer item={movie} />);
 
-    // Initial: Source 1 (player.vidmario.net)
+    // Initial: Source 1 (anyembed.xyz)
     expect((screen.getByTestId('player-iframe') as HTMLIFrameElement).src).toContain(
-      'player.vidmario.net'
+      'anyembed.xyz'
     );
 
-    // Fallback to Source 2 (embed.su)
+    // Fallback to Source 2 (player.vidmario.net)
     fireEvent.click(screen.getByTestId('control-fallback-btn'));
     expect((screen.getByTestId('player-iframe') as HTMLIFrameElement).src).toContain(
-      'embed.su'
+      'player.vidmario.net'
     );
 
     // Exhausted all sources -> displays error overlay
@@ -42,7 +44,7 @@ describe('VideoPlayer Component — Direct VidMario Player, Source Fallback & Ep
     fireEvent.click(screen.getByTestId('player-retry-sources-btn'));
     expect(screen.queryByTestId('player-error-overlay')).not.toBeInTheDocument();
     expect((screen.getByTestId('player-iframe') as HTMLIFrameElement).src).toContain(
-      'player.vidmario.net'
+      'anyembed.xyz'
     );
   });
 

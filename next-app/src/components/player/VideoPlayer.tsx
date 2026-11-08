@@ -15,6 +15,7 @@ import {
 } from '@/lib/schemas';
 import {
   IFRAME_ALLOW_PERMISSIONS,
+  IFRAME_SANDBOX_PERMISSIONS,
   resolveNextSourceState,
 } from '@/lib/video/adapter';
 import { buildAuthorizedVideoSources } from '@/lib/video/providers';
@@ -324,6 +325,11 @@ export default function VideoPlayer({
             className={`absolute inset-0 w-full h-full border-0 transition-opacity duration-300 ${
               loaded ? 'opacity-100' : 'opacity-90'
             }`}
+            sandbox={
+              !activeSource.hostname.includes('vidmario.net')
+                ? IFRAME_SANDBOX_PERMISSIONS
+                : undefined
+            }
             allowFullScreen
             allow={IFRAME_ALLOW_PERMISSIONS}
             referrerPolicy="origin"

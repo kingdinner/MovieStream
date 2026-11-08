@@ -30,6 +30,8 @@ export default function PlayerModal({
   const src    = embedSources[srcIdx] ?? '';
   const total  = embedSources.length;
   const hasNext = srcIdx < total - 1;
+  /* Strict HTML5 iframe sandbox for sources that support it (blocks 100% of new-tab popups on Smart TVs) */
+  const isSandboxable = !src.includes('vidmario.net') && !src.includes('vidlink.pro');
 
   /* Episode navigation helpers (TV only) */
   const currentEpIdx = isTv
@@ -236,6 +238,7 @@ export default function PlayerModal({
             opacity: loaded && !loadError ? 1 : 0,
             transition: 'opacity .3s',
           }}
+          sandbox={isSandboxable ? 'allow-scripts allow-same-origin allow-forms allow-presentation' : undefined}
           allowFullScreen
           allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
           onLoad={() => {

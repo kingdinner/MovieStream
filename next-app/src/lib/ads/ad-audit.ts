@@ -128,6 +128,7 @@ export function classifyResource(identifier: string): AdClassification {
   }
 
   if (
+    normalized.includes('anyembed.xyz/embed') ||
     normalized.includes('player.vidmario.net/embed') ||
     normalized.includes('embed.su/embed')
   ) {

@@ -2,9 +2,9 @@ import { AuthorizedProviderUrlSchema } from '@/lib/schemas';
 import { type SubtitleLanguage, type VideoSourceDescriptor } from './providers';
 
 export interface VideoProviderAdapter {
-  readonly id: 'vidmario' | 'embed_su';
+  readonly id: 'anyembed' | 'vidmario' | 'embed_su';
   readonly name: string;
-  readonly hostname: 'player.vidmario.net' | 'embed.su';
+  readonly hostname: 'anyembed.xyz' | 'player.vidmario.net' | 'embed.su';
   readonly priority: number;
   readonly supportsSubtitleParam: boolean;
   buildMovieUrl(tmdbId: number, subtitle?: SubtitleLanguage): string;
@@ -16,11 +16,25 @@ export interface VideoProviderAdapter {
   ): string;
 }
 
+export const AnyEmbedAdapter: VideoProviderAdapter = {
+  id: 'anyembed',
+  name: 'AnyEmbed',
+  hostname: 'anyembed.xyz',
+  priority: 1,
+  supportsSubtitleParam: false,
+  buildMovieUrl(tmdbId) {
+    return `https://anyembed.xyz/embed/movie/${tmdbId}?theme=red&logo=false`;
+  },
+  buildEpisodeUrl(tmdbId, season, episode) {
+    return `https://anyembed.xyz/embed/tv/${tmdbId}/${season}/${episode}?theme=red&logo=false`;
+  },
+};
+
 export const VidMarioAdapter: VideoProviderAdapter = {
   id: 'vidmario',
   name: 'VidMario',
   hostname: 'player.vidmario.net',
-  priority: 1,
+  priority: 2,
   supportsSubtitleParam: false,
   buildMovieUrl(tmdbId) {
     return `https://player.vidmario.net/embed/movie/${tmdbId}?primarycolor=e50914&autoplay=true&player=mc-slate`;
@@ -34,7 +48,7 @@ export const EmbedSuAdapter: VideoProviderAdapter = {
   id: 'embed_su',
   name: 'Embed SU',
   hostname: 'embed.su',
-  priority: 2,
+  priority: 3,
   supportsSubtitleParam: false,
   buildMovieUrl(tmdbId) {
     return `https://embed.su/embed/movie/${tmdbId}`;
@@ -45,9 +59,12 @@ export const EmbedSuAdapter: VideoProviderAdapter = {
 };
 
 export const AUTHORIZED_VIDEO_ADAPTERS: readonly VideoProviderAdapter[] = [
+  AnyEmbedAdapter,
   VidMarioAdapter,
-  EmbedSuAdapter,
 ] as const;
+
+export const IFRAME_SANDBOX_PERMISSIONS =
+  'allow-scripts allow-same-origin allow-forms allow-presentation' as const;
 
 export const IFRAME_ALLOW_PERMISSIONS =
   'autoplay; encrypted-media; fullscreen; picture-in-picture' as const;
